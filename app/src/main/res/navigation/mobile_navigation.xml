@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="ro.unibuc.cs.memeow.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:id="@+id/nav_create_meme"
+        android:name="ro.unibuc.cs.memeow.ui.TemplateListFragment"
+        android:label="@string/create_meme"
+        tools:layout="@layout/fragment_template_list" />
 
     <fragment
         android:id="@+id/nav_slideshow"
