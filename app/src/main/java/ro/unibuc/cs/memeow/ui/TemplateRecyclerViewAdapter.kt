@@ -2,6 +2,7 @@ package ro.unibuc.cs.memeow.ui
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import ro.unibuc.cs.memeow.databinding.LayoutTemplateItemBinding
 
@@ -29,6 +30,13 @@ class TemplateRecyclerViewAdapter :
 
     inner class ViewHolder(internal val binding: LayoutTemplateItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            binding.root.setOnClickListener {
+                val action = TemplateListFragmentDirections.actionSelectTemplate()
+                it.findNavController().navigate(action)
+            }
+        }
 
         override fun toString(): String {
             return super.toString() + " '" + binding.templateTitle + "'"

@@ -11,4 +11,5 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="meme_template">Meme Template</string>
     <string name="create_meme">Create Meme</string>
+    <string name="write_some_funny_text">Write some funny text...</string>
 </resources>

@@ -15,11 +15,20 @@
         android:id="@+id/nav_create_meme"
         android:name="ro.unibuc.cs.memeow.ui.TemplateListFragment"
         android:label="@string/create_meme"
-        tools:layout="@layout/fragment_template_list" />
+        tools:layout="@layout/fragment_template_list">
+        <action
+            android:id="@+id/action_select_template"
+            app:destination="@id/editTemplateFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_slideshow"
         android:name="ro.unibuc.cs.memeow.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/editTemplateFragment"
+        android:name="ro.unibuc.cs.memeow.ui.EditTemplateFragment"
+        android:label="Edit Meme"
+        tools:layout="@layout/fragment_edit_template" />
 </navigation>
