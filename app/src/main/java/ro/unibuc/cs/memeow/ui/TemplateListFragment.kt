@@ -5,55 +5,108 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
+import androidx.paging.PagingDataAdapter
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.model.GlideUrl
+import com.bumptech.glide.load.model.LazyHeaders
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
+import ro.unibuc.cs.memeow.databinding.FragmentTemplateListBinding
+import ro.unibuc.cs.memeow.databinding.LayoutTemplateItemBinding
+import ro.unibuc.cs.memeow.model.MemeTemplate
+
 
 /**
  * A fragment representing a list of Items.
  */
-class TemplateListFragment : Fragment() {
+@AndroidEntryPoint
+class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
 
-    private var columnCount = 2
+    private var _binding: FragmentTemplateListBinding? = null
+    private val binding get() = _binding!!
+    private val viewModel by viewModels<EditorViewModel>()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            columnCount = it.getInt(ARG_COLUMN_COUNT)
-        }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        val view =
-            inflater.inflate(R.layout.fragment_template_list, container, false) as RecyclerView
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        _binding = FragmentTemplateListBinding.bind(view)
 
         // Set the adapter
-        view.layoutManager = when {
-            columnCount <= 1 -> LinearLayoutManager(context)
-            else -> GridLayoutManager(context, columnCount)
-        }
-        view.adapter = TemplateRecyclerViewAdapter()
+        val templateList = binding.templateList
+        val adapter = RecyclerAdapter()
+        templateList.layoutManager = GridLayoutManager(context, 2)
+        templateList.adapter = adapter
+        templateList.setHasFixedSize(true)
 
-        return view
+        viewModel.templates.observe(viewLifecycleOwner) {
+            adapter.submitData(viewLifecycleOwner.lifecycle, it)
+        }
     }
 
-    companion object {
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
-        // TODO: Customize parameter argument names
-        const val ARG_COLUMN_COUNT = "column-count"
+    class RecyclerAdapter :
+        PagingDataAdapter<MemeTemplate, RecyclerAdapter.ViewHolder>(DIFF_CALLBACK) {
 
-        // TODO: Customize parameter initialization
-        @JvmStatic
-        fun newInstance(columnCount: Int) =
-            TemplateListFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(ARG_COLUMN_COUNT, columnCount)
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+            ViewHolder(
+                LayoutTemplateItemBinding.inflate(
+                    LayoutInflater.from(parent.context), parent, false
+                )
+            )
+
+        override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+            val currentItem = getItem(position)
+            if (currentItem != null) {
+                holder.bind(currentItem)
+            }
+        }
+
+        class ViewHolder(private val binding: LayoutTemplateItemBinding) :
+            RecyclerView.ViewHolder(binding.root) {
+
+            init {
+                binding.root.setOnClickListener {
+                    val action = TemplateListFragmentDirections.actionSelectTemplate()
+                    it.findNavController().navigate(action)
                 }
             }
+
+            fun bind(template: MemeTemplate) {
+                val url = GlideUrl(
+                    template.thumbnailUrl, LazyHeaders.Builder()
+                        .addHeader("User-Agent", "your-user-agent")
+                        .build()
+                )
+                Glide.with(itemView)
+                    .load(url)
+                    .centerCrop()
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .error(R.drawable.ic_baseline_signal_wifi_off_24)
+                    .into(binding.templateImg)
+                binding.templateTitle.text = template.title
+            }
+
+            override fun toString(): String {
+                return super.toString() + " '" + binding.templateTitle + "'"
+            }
+        }
+
+        companion object {
+            private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<MemeTemplate>() {
+                override fun areItemsTheSame(oldItem: MemeTemplate, newItem: MemeTemplate) =
+                    oldItem.id == newItem.id
+
+                override fun areContentsTheSame(oldItem: MemeTemplate, newItem: MemeTemplate) =
+                    oldItem == newItem
+            }
+        }
     }
 }

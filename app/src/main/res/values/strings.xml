@@ -12,4 +12,7 @@
     <string name="meme_template">Meme Template</string>
     <string name="create_meme">Create Meme</string>
     <string name="write_some_funny_text">Write some funny text...</string>
+    <string name="retry">Retry</string>
+    <string name="failed_loading_images">Failed loading images</string>
+    <string name="meme_not_found">No template found for your query</string>
 </resources>
