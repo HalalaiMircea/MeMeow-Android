@@ -21,10 +21,6 @@ import ro.unibuc.cs.memeow.databinding.FragmentTemplateListBinding
 import ro.unibuc.cs.memeow.databinding.LayoutTemplateItemBinding
 import ro.unibuc.cs.memeow.model.MemeTemplate
 
-
-/**
- * A fragment representing a list of Items.
- */
 @AndroidEntryPoint
 class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
 
@@ -80,23 +76,20 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
             }
 
             fun bind(template: MemeTemplate) {
-                val url = GlideUrl(
-                    template.thumbnailUrl, LazyHeaders.Builder()
-                        .addHeader("User-Agent", "your-user-agent")
-                        .build()
-                )
+                val headers =
+                    LazyHeaders.Builder().addHeader("User-Agent", "your-user-agent").build()
+                val url = GlideUrl(template.thumbnailUrl, headers)
                 Glide.with(itemView)
                     .load(url)
                     .centerCrop()
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.ic_baseline_signal_wifi_off_24)
+                    .error(R.drawable.ic_baseline_broken_image_24)
                     .into(binding.templateImg)
                 binding.templateTitle.text = template.title
             }
 
-            override fun toString(): String {
-                return super.toString() + " '" + binding.templateTitle + "'"
-            }
+            override fun toString() =
+                super.toString() + " '" + binding.templateTitle + "'"
         }
 
         companion object {

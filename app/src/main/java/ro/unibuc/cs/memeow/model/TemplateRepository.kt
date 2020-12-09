@@ -9,6 +9,7 @@ import javax.inject.Singleton
 
 @Singleton
 class TemplateRepository @Inject constructor(private val memeowApi: MemeowApi) {
+
     fun getTemplatePage() =
         Pager(
             config = PagingConfig(
