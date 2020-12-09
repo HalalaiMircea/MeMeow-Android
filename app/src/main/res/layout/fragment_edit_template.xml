@@ -10,12 +10,12 @@
         android:id="@+id/img_meme"
         android:layout_width="match_parent"
         android:layout_height="230dp"
-        android:contentDescription="TODO"
         android:src="@drawable/ic_menu_gallery"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
 
     <EditText
         android:id="@+id/edit_text_box"

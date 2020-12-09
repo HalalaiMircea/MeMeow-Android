@@ -54,7 +54,6 @@ dependencies {
 
     //Facebook
     implementation 'com.facebook.android:facebook-login:8.1.0'
-    implementation 'com.squareup.picasso:picasso:2.71828'
 
     // Http client, image loading, paging optimisation
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'

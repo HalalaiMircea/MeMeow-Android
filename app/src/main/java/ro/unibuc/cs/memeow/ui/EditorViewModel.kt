@@ -16,4 +16,6 @@ class EditorViewModel @ViewModelInject constructor(
     val templates: LiveData<PagingData<MemeTemplate>> =
         repository.getTemplatePage().cachedIn(viewModelScope)
 
+    var currentTemplate: MemeTemplate? = null
+
 }

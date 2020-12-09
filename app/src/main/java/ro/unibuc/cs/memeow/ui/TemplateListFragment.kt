@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -23,17 +23,15 @@ import ro.unibuc.cs.memeow.model.MemeTemplate
 
 @AndroidEntryPoint
 class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
-
     private var _binding: FragmentTemplateListBinding? = null
     private val binding get() = _binding!!
-    private val viewModel by viewModels<EditorViewModel>()
+    private val viewModel by activityViewModels<EditorViewModel>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentTemplateListBinding.bind(view)
 
-        // Set the adapter
         val templateList = binding.templateList
-        val adapter = RecyclerAdapter()
+        val adapter = RecyclerAdapter(viewModel)
         templateList.layoutManager = GridLayoutManager(context, 2)
         templateList.adapter = adapter
         templateList.setHasFixedSize(true)
@@ -48,15 +46,15 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
         _binding = null
     }
 
-    class RecyclerAdapter :
+    class RecyclerAdapter(private val viewModel: EditorViewModel) :
         PagingDataAdapter<MemeTemplate, RecyclerAdapter.ViewHolder>(DIFF_CALLBACK) {
 
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-            ViewHolder(
-                LayoutTemplateItemBinding.inflate(
-                    LayoutInflater.from(parent.context), parent, false
-                )
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+            val binding = LayoutTemplateItemBinding.inflate(
+                LayoutInflater.from(parent.context), parent, false
             )
+            return ViewHolder(binding, viewModel)
+        }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val currentItem = getItem(position)
@@ -65,27 +63,30 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
             }
         }
 
-        class ViewHolder(private val binding: LayoutTemplateItemBinding) :
-            RecyclerView.ViewHolder(binding.root) {
+        class ViewHolder(
+            private val binding: LayoutTemplateItemBinding,
+            private val viewModel: EditorViewModel
+        ) : RecyclerView.ViewHolder(binding.root) {
+
+            private lateinit var template: MemeTemplate
 
             init {
                 binding.root.setOnClickListener {
+                    viewModel.currentTemplate = template
                     val action = TemplateListFragmentDirections.actionSelectTemplate()
                     it.findNavController().navigate(action)
                 }
             }
 
             fun bind(template: MemeTemplate) {
-                val headers =
-                    LazyHeaders.Builder().addHeader("User-Agent", "your-user-agent").build()
-                val url = GlideUrl(template.thumbnailUrl, headers)
                 Glide.with(itemView)
-                    .load(url)
+                    .load(GlideUrl(template.thumbnailUrl, headers))
                     .centerCrop()
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .error(R.drawable.ic_baseline_broken_image_24)
                     .into(binding.templateImg)
                 binding.templateTitle.text = template.title
+                this.template = template
             }
 
             override fun toString() =
@@ -100,6 +101,10 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
                 override fun areContentsTheSame(oldItem: MemeTemplate, newItem: MemeTemplate) =
                     oldItem == newItem
             }
+
+            val headers: LazyHeaders = LazyHeaders.Builder()
+                .addHeader("User-Agent", "your-user-agent")
+                .build()
         }
     }
 }

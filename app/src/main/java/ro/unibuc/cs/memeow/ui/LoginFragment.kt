@@ -5,62 +5,59 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import ro.unibuc.cs.memeow.R
-import ro.unibuc.cs.memeow.databinding.FragmentLoginBinding
+import com.bumptech.glide.Glide
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
 import com.facebook.FacebookException
 import com.facebook.login.LoginResult
-import com.squareup.picasso.Picasso
+import ro.unibuc.cs.memeow.R
+import ro.unibuc.cs.memeow.databinding.FragmentLoginBinding
 
-class LoginFragment: Fragment(R.layout.fragment_login) {
-    private lateinit var callbackManager: CallbackManager
-    private var _binding: FragmentLoginBinding?=null
+class LoginFragment : Fragment(R.layout.fragment_login) {
+    private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-
+    private lateinit var callbackManager: CallbackManager
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         _binding = FragmentLoginBinding.bind(view)
         val info = binding.info
-        val loginFacebookButton = binding.loginFacebookButton
+        val loginFbButton = binding.loginFacebookButton
         val profile = binding.profile
 
-        //FacebookSdk.sdkInitialize(context?.applicationContext)
-        loginFacebookButton.fragment = this
-
-        var email = "email";
-
-        loginFacebookButton.setReadPermissions(listOf(email));
+        loginFbButton.fragment = this
+        loginFbButton.setPermissions(listOf("email"))
 
         callbackManager = CallbackManager.Factory.create()
 
-        loginFacebookButton.registerCallback(callbackManager, object: FacebookCallback<LoginResult> {
-            override fun onSuccess(result: LoginResult?) {
-                info.text = "User ID:" +  result?.getAccessToken()?.getUserId() + "\n" + "Auth Token:" + result?.getAccessToken()?.getToken()
-                Toast.makeText(context,"User ID: ${result?.getAccessToken()?.getUserId()}",Toast.LENGTH_LONG).show()
-                var img = "http://graph.facebook.com/" + result?.getAccessToken()?.getUserId() + "/picture?type=square"
-                Picasso.get().load(img).into(profile)
+        loginFbButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
+            override fun onSuccess(result: LoginResult) {
+                val userId = result.accessToken.userId
+                info.text = "User ID:$userId\nAuth Token:${result.accessToken.token}"
+                Toast.makeText(context, "User ID: $userId", Toast.LENGTH_LONG).show()
+                Glide.with(this@LoginFragment)
+                    .load("http://graph.facebook.com/$userId/picture?type=square")
+                    .error(R.drawable.ic_baseline_broken_image_24)
+                    .into(profile)
             }
 
             override fun onCancel() {
                 info.text = "Login canceled"
+                Toast.makeText(context, "Login canceled", Toast.LENGTH_LONG).show()
             }
 
-            override fun onError(error: FacebookException?) {
+            override fun onError(error: FacebookException) {
                 info.text = "Login failed"
+                Toast.makeText(context, "Login failed", Toast.LENGTH_LONG).show()
             }
         })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
         callbackManager.onActivityResult(requestCode, resultCode, data)
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding=null
+        _binding = null
     }
-
-
 }
