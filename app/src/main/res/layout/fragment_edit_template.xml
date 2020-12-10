@@ -6,29 +6,43 @@
     android:layout_height="match_parent"
     tools:context=".ui.EditTemplateFragment">
 
-    <ImageView
-        android:id="@+id/img_meme"
+    <FrameLayout
+        android:id="@+id/img_text_container"
         android:layout_width="match_parent"
-        android:layout_height="230dp"
-        android:src="@drawable/ic_menu_gallery"
+        android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/img_meme"
+            android:layout_width="400dp"
+            android:layout_height="400dp"
+            android:src="@drawable/ic_menu_gallery"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/text_view_box"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Text#1"
+            android:textColor="#000000"
+            android:textSize="24sp"
+            android:typeface="normal" />
+    </FrameLayout>
 
     <EditText
         android:id="@+id/edit_text_box"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
         android:hint="@string/write_some_funny_text"
         android:importantForAutofill="no"
         android:inputType="text"
-        app:layout_constraintBottom_toTopOf="@+id/img_meme"
+        app:layout_constraintBottom_toTopOf="@+id/img_text_container"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.9" />
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
