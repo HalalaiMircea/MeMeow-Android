@@ -18,5 +18,6 @@
 
     <string name="facebook_app_id">415198529620152</string>
     <string name="fb_login_protocol_scheme">fb415198529620152</string>
+    <string name="add_text">Add Text</string>
 
 </resources>
