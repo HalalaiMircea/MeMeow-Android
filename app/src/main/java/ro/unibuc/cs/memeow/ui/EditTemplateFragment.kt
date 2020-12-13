@@ -1,10 +1,7 @@
 package ro.unibuc.cs.memeow.ui
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Typeface
+import android.graphics.*
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextPaint
@@ -14,6 +11,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.children
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -30,7 +29,9 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
     private var _binding: FragmentEditTemplateBinding? = null
     private val binding get() = _binding!!
     private val viewModel by activityViewModels<EditorViewModel>()
-    private val editorTextWatcher = EditTextWatcher(null)
+
+    private val editTextWatcher = EditTextWatcher(null)
+    private lateinit var canvas: Canvas
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentEditTemplateBinding.bind(view)
@@ -39,7 +40,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         val imgMeme = binding.imgMeme
         val container = binding.imgTextContainer
 
-        editTextBox.addTextChangedListener(editorTextWatcher)
+        editTextBox.addTextChangedListener(editTextWatcher)
 
         // Load the currently selected template from the view model
         Glide.with(this)
@@ -50,10 +51,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                 ): Boolean = false
 
                 override fun onResourceReady(
-                    resource: Bitmap?,
-                    model: Any?,
-                    target: Target<Bitmap>?,
-                    dataSource: DataSource?,
+                    resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?,
                     isFirstResource: Boolean
                 ): Boolean {
                     // We do this once the image loaded successfully because we need its dimensions
@@ -62,15 +60,29 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                         val touchListener = CustomTouchListener(container.width, container.height)
                         // When image is loaded, add the first TextView automatically and set it as the target
                         // for editText's TextWatcher
-                        addText(touchListener)
-                        binding.buttonAddText.setOnClickListener { addText(touchListener) }
+                        addTextView(touchListener)
+                        binding.buttonAddText.setOnClickListener { addTextView(touchListener) }
                     }
+                    canvas = Canvas(resource!!)
                     return false
                 }
             })
             .load(GlideUrl(fullSizeImgUrl, TemplateListFragment.RecyclerAdapter.headers))
             .error(R.drawable.ic_baseline_broken_image_24)
             .into(imgMeme)
+
+        binding.buttonRender.setOnClickListener {
+            for (v in container.children) {
+                if (v is TextView) {
+                    canvas.drawText(v.text.toString(), v.x, v.y, textPaint)
+                }
+            }
+        }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     /**
@@ -79,18 +91,22 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
      * Also changes the target of the TextWatcher to this new textView.
      */
     @SuppressLint("ClickableViewAccessibility")
-    private fun addText(touchListener: CustomTouchListener) {
-        val textView = TextView(context)
-        textView.layoutParams = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
-        )
-        textView.hint = "Extra Text"
-        textView.textSize = textSize
-        textView.setTextColor(textColor)
-        textView.setOnTouchListener(touchListener)
-        textView.setOnClickListener(this::changeTextTarget)
-        binding.imgTextContainer.addView(textView)
+    private fun addTextView(touchListener: CustomTouchListener) {
+        val textView = TextView(context).apply {
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+            hint = "Tap to edit"
+            typeface = ResourcesCompat.getFont(requireContext(), defaultFontId)
+            textSize = defaultTextSize
+            setTextColor(defaultTextColor)
+            setHintTextColor(defaultTextColor)
+            setShadowLayer(7.5f, 1f, 1f, Color.BLACK)
+            setOnTouchListener(touchListener)
+            setOnClickListener(this@EditTemplateFragment::changeTextTarget)
+        }
 
+        binding.imgTextContainer.addView(textView)
         changeTextTarget(textView)
     }
 
@@ -100,16 +116,11 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
      */
     private fun changeTextTarget(view: View) {
         if (view is TextView) {
-            editorTextWatcher.target = view
+            editTextWatcher.target = view
             binding.editTextBox.setText(view.text)
         } else {
             Log.e(TAG, "changeTextTarget: $view is not a TextView")
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     class EditTextWatcher(var target: TextView?) : TextWatcher {
@@ -122,7 +133,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         override fun afterTextChanged(s: Editable?) {}
     }
 
-    inner class CustomTouchListener(
+    class CustomTouchListener(
         private val screenWidth: Int, private val screenHeight: Int
     ) : View.OnTouchListener {
         private var dX: Float = 0f
@@ -171,14 +182,15 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
     companion object {
         private const val TAG = "EditTemplateFragment"
         private val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG or Paint.LINEAR_TEXT_FLAG)
-        private const val textSize = 24f
-        private const val textColor = Color.BLACK
+        private const val defaultTextSize = 30f
+        private const val defaultTextColor = Color.WHITE
+        private const val defaultFontId = R.font.impact
 
         init {
             textPaint.style = Paint.Style.FILL
             textPaint.typeface = Typeface.SERIF
             textPaint.color = Color.BLACK
-            textPaint.textSize = 30f
+            textPaint.textSize = defaultTextSize
         }
     }
 }
