@@ -10,12 +10,12 @@ import ro.unibuc.cs.memeow.model.MemeTemplate
 import ro.unibuc.cs.memeow.model.TemplateRepository
 
 class EditorViewModel @ViewModelInject constructor(
-    repository: TemplateRepository
+    private val repository: TemplateRepository
 ) : ViewModel() {
 
     val templates: LiveData<PagingData<MemeTemplate>> =
-        repository.getTemplatePage().cachedIn(viewModelScope)
+        repository.getTemplateResults(null).cachedIn(viewModelScope)
 
-    var currentTemplate: MemeTemplate? = null
+    lateinit var currentTemplate: MemeTemplate
 
 }

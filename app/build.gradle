@@ -52,12 +52,16 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    //Facebook
+    // Facebook
     implementation 'com.facebook.android:facebook-login:8.1.0'
 
-    // Http client, image loading, paging optimisation
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    // Retrofit http client
+    def retrofitVersion = '2.9.0'
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
+
+    // Image loading, paging optimisation
     implementation 'com.github.bumptech.glide:glide:4.11.0'
     implementation 'androidx.paging:paging-runtime-ktx:3.0.0-alpha10'
 

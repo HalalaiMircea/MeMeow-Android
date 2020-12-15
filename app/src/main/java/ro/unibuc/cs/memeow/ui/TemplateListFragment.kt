@@ -12,8 +12,6 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
@@ -80,12 +78,12 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
 
             fun bind(template: MemeTemplate) {
                 Glide.with(itemView)
-                    .load(GlideUrl(template.thumbnailUrl, headers))
+                    .load(template.imageUrl)
                     .centerCrop()
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .error(R.drawable.ic_baseline_broken_image_24)
                     .into(binding.templateImg)
-                binding.templateTitle.text = template.title
+                binding.templateTitle.text = template.templateName
                 this.template = template
             }
 
@@ -96,15 +94,11 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
         companion object {
             private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<MemeTemplate>() {
                 override fun areItemsTheSame(oldItem: MemeTemplate, newItem: MemeTemplate) =
-                    oldItem.id == newItem.id
+                    oldItem.templateName == newItem.templateName
 
                 override fun areContentsTheSame(oldItem: MemeTemplate, newItem: MemeTemplate) =
                     oldItem == newItem
             }
-
-            val headers: LazyHeaders = LazyHeaders.Builder()
-                .addHeader("User-Agent", "your-user-agent")
-                .build()
         }
     }
 }

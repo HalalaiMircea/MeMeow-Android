@@ -4,38 +4,47 @@ import android.annotation.SuppressLint
 import android.graphics.*
 import android.os.Bundle
 import android.text.Editable
-import android.text.TextPaint
 import android.text.TextWatcher
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.children
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import dagger.hilt.android.AndroidEntryPoint
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import ro.unibuc.cs.memeow.R
+import ro.unibuc.cs.memeow.api.MemeowApi
 import ro.unibuc.cs.memeow.databinding.FragmentEditTemplateBinding
+import java.io.ByteArrayOutputStream
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
     private var _binding: FragmentEditTemplateBinding? = null
     private val binding get() = _binding!!
     private val viewModel by activityViewModels<EditorViewModel>()
 
+    @Inject lateinit var memeowApi: MemeowApi
     private val editTextWatcher = EditTextWatcher(null)
-    private lateinit var canvas: Canvas
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentEditTemplateBinding.bind(view)
-        val fullSizeImgUrl = viewModel.currentTemplate!!.url
+        val fullSizeImgUrl = viewModel.currentTemplate.imageUrl
         val editTextBox = binding.editTextBox
         val imgMeme = binding.imgMeme
         val container = binding.imgTextContainer
@@ -63,20 +72,38 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                         addTextView(touchListener)
                         binding.buttonAddText.setOnClickListener { addTextView(touchListener) }
                     }
-                    canvas = Canvas(resource!!)
                     return false
                 }
             })
-            .load(GlideUrl(fullSizeImgUrl, TemplateListFragment.RecyclerAdapter.headers))
+            .load(fullSizeImgUrl)
             .error(R.drawable.ic_baseline_broken_image_24)
             .into(imgMeme)
 
         binding.buttonRender.setOnClickListener {
-            for (v in container.children) {
-                if (v is TextView) {
-                    canvas.drawText(v.text.toString(), v.x, v.y, textPaint)
+            val bitmap = Bitmap.createBitmap(container.width, container.height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            container.layout(container.left, container.top, container.right, container.bottom)
+            container.draw(canvas)
+
+            val stream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+
+            val image = MultipartBody.Part.createFormData(
+                "file", "", RequestBody.create(MediaType.parse("image/png"), stream.toByteArray())
+            )
+            val templateId = viewModel.currentTemplate.templateName
+
+            memeowApi.uploadMeme(image, templateId).enqueue(object : Callback<String> {
+                override fun onResponse(call: Call<String>, response: Response<String>) {
+                    val result = if (response.isSuccessful) response.body() else response.code()
+                    Toast.makeText(context, result.toString(), Toast.LENGTH_LONG).show()
+                    Log.e(TAG, "onResponse: ${result.toString()}")
                 }
-            }
+
+                override fun onFailure(call: Call<String>, t: Throwable) {
+                    Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show()
+                }
+            })
         }
     }
 
@@ -97,10 +124,10 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
             )
             hint = "Tap to edit"
-            typeface = ResourcesCompat.getFont(requireContext(), defaultFontId)
-            textSize = defaultTextSize
-            setTextColor(defaultTextColor)
-            setHintTextColor(defaultTextColor)
+            typeface = ResourcesCompat.getFont(requireContext(), DEFAULT_FONT_ID)
+            textSize = DEFAULT_TEXT_SIZE
+            setTextColor(DEFAULT_TEXT_COLOR)
+            setHintTextColor(DEFAULT_TEXT_COLOR)
             setShadowLayer(7.5f, 1f, 1f, Color.BLACK)
             setOnTouchListener(touchListener)
             setOnClickListener(this@EditTemplateFragment::changeTextTarget)
@@ -155,8 +182,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                     dY = view.y - event.rawY
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    newX = event.rawX + dX
-                    newY = event.rawY + dY
+                    newX = event.rawX + dX; newY = event.rawY + dY
 
                     if ((newX <= 0 || newX >= screenWidth - view.width)
                         && (newY <= 0 || newY >= screenHeight - view.height)
@@ -171,8 +197,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                         view.x = newX
                         return true
                     }
-                    view.x = newX
-                    view.y = newY
+                    view.x = newX; view.y = newY
                 }
             }
             return true
@@ -181,16 +206,8 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
 
     companion object {
         private const val TAG = "EditTemplateFragment"
-        private val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG or Paint.LINEAR_TEXT_FLAG)
-        private const val defaultTextSize = 30f
-        private const val defaultTextColor = Color.WHITE
-        private const val defaultFontId = R.font.impact
-
-        init {
-            textPaint.style = Paint.Style.FILL
-            textPaint.typeface = Typeface.SERIF
-            textPaint.color = Color.BLACK
-            textPaint.textSize = defaultTextSize
-        }
+        private const val DEFAULT_TEXT_SIZE = 30f
+        private const val DEFAULT_TEXT_COLOR = Color.WHITE
+        private const val DEFAULT_FONT_ID = R.font.impact
     }
 }
