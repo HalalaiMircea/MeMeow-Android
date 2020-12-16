@@ -23,7 +23,7 @@ import ro.unibuc.cs.memeow.model.MemeTemplate
 class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
     private var _binding: FragmentTemplateListBinding? = null
     private val binding get() = _binding!!
-    private val viewModel by activityViewModels<EditorViewModel>()
+    private val viewModel: EditorViewModel by activityViewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentTemplateListBinding.bind(view)

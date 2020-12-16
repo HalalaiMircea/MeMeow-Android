@@ -15,6 +15,8 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.NavOptions
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -37,18 +39,45 @@ import javax.inject.Inject
 class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
     private var _binding: FragmentEditTemplateBinding? = null
     private val binding get() = _binding!!
-    private val viewModel by activityViewModels<EditorViewModel>()
+    private val editorViewModel: EditorViewModel by activityViewModels()
+    private val userViewModel: UserViewModel by activityViewModels()
 
     @Inject lateinit var memeowApi: MemeowApi
-    private val editTextWatcher = EditTextWatcher(null)
+    private lateinit var editTextWatcher: EditTextWatcher
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        //https://developer.android.com/guide/navigation/navigation-conditional#kotlin
+        val navController = findNavController()
+        val currentBackStackEntry = navController.currentBackStackEntry!!
+        val savedStateHandle = currentBackStackEntry.savedStateHandle
+        savedStateHandle.getLiveData<Boolean>(LoginFragment.LOGIN_SUCCESSFUL)
+            .observe(currentBackStackEntry, { success ->
+                if (!success) {
+                    val startDestination = R.id.nav_create_meme
+                    val navOptions = NavOptions.Builder()
+                        .setPopUpTo(startDestination, true)
+                        .build()
+                    navController.navigate(startDestination, null, navOptions)
+                }
+            })
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentEditTemplateBinding.bind(view)
-        val fullSizeImgUrl = viewModel.currentTemplate.imageUrl
+        val fullSizeImgUrl = editorViewModel.currentTemplate.imageUrl
         val editTextBox = binding.editTextBox
         val imgMeme = binding.imgMeme
         val container = binding.imgTextContainer
+        // If we get here from TemplateListFrag, we check if user's logged in
+        userViewModel.loggedInState.observe(viewLifecycleOwner) { loggedState: Boolean ->
+            if (!loggedState) {
+                findNavController().navigate(R.id.login_fragment)
+            }
+        }
 
+        editTextWatcher = EditTextWatcher(null)
         editTextBox.addTextChangedListener(editTextWatcher)
 
         // Load the currently selected template from the view model
@@ -91,11 +120,14 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
             val image = MultipartBody.Part.createFormData(
                 "file", "", RequestBody.create(MediaType.parse("image/png"), stream.toByteArray())
             )
-            val templateId = viewModel.currentTemplate.templateName
+            val templateId = editorViewModel.currentTemplate.templateName
 
             memeowApi.uploadMeme(image, templateId).enqueue(object : Callback<String> {
                 override fun onResponse(call: Call<String>, response: Response<String>) {
-                    val result = if (response.isSuccessful) response.body() else response.code()
+                    val result = if (response.isSuccessful)
+                        response.body()
+                    else
+                        response.message() + response.code()
                     Toast.makeText(context, result.toString(), Toast.LENGTH_LONG).show()
                     Log.e(TAG, "onResponse: ${result.toString()}")
                 }
@@ -109,6 +141,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        binding.editTextBox.removeTextChangedListener(editTextWatcher)
         _binding = null
     }
 
@@ -118,7 +151,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
      * Also changes the target of the TextWatcher to this new textView.
      */
     @SuppressLint("ClickableViewAccessibility")
-    private fun addTextView(touchListener: CustomTouchListener) {
+    private fun addTextView(touchListener: CustomTouchListener): TextView {
         val textView = TextView(context).apply {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
@@ -135,6 +168,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
 
         binding.imgTextContainer.addView(textView)
         changeTextTarget(textView)
+        return textView
     }
 
     /**
@@ -154,7 +188,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            target!!.text = s
+            target?.text = s
         }
 
         override fun afterTextChanged(s: Editable?) {}

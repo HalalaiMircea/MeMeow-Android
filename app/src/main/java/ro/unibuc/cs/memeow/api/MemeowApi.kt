@@ -9,7 +9,7 @@ import ro.unibuc.cs.memeow.model.ServerAuthResponse
 
 interface MemeowApi {
 
-    @GET("api/templates/available")
+    @GET("templates/available")
     suspend fun getAvailableTemplates(
         @Query("contains") contains: String?,
         @Query("minLevel") minLevel: Int?,
@@ -17,21 +17,21 @@ interface MemeowApi {
         @Query("pageSize") pageSize: Int
     ): List<MemeTemplate>
 
-    @GET("api/templates/unavailable")
+    @GET("templates/unavailable")
     suspend fun getUnavailableTemplates(
         @Query("contains") contains: String?,
         @Query("page") page: Int,
         @Query("pageSize") pageSize: Int
     ): List<MemeTemplate>
 
-    @POST("api/authenticate/facebook")
+    @POST("authenticate/facebook")
     fun facebookAuth(@Body body: FacebookAuthUser): Call<ServerAuthResponse>
 
     @Multipart
-    @POST("api/memes/create")
+    @POST("memes/create")
     fun uploadMeme(@Part image: MultipartBody.Part, @Part("templateName") templateId: String): Call<String>
 
     companion object {
-        const val BASE_URL = "https://memeow-dev.herokuapp.com/"
+        const val BASE_URL = "https://memeow-dev.herokuapp.com/api/"
     }
 }

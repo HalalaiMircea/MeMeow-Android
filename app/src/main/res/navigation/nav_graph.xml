@@ -31,7 +31,7 @@
         android:label="Edit Meme"
         tools:layout="@layout/fragment_edit_template" />
     <fragment
-        android:id="@+id/nav_login"
+        android:id="@+id/login_fragment"
         android:name="ro.unibuc.cs.memeow.ui.LoginFragment"
         android:label="@string/login"
         tools:layout="@layout/fragment_login" />

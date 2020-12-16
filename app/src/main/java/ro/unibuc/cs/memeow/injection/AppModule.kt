@@ -38,7 +38,6 @@ object AppModule {
                 sharedPrefs.getString(API_KEY, null)?.let {
                     requestBuilder = requestBuilder.header("Authorization", it)
                 }
-                //Log.e(TAG, "provideRetrofit: ${sharedPrefs.getString(API_KEY, null)}")
 
                 return@addInterceptor chain.proceed(requestBuilder.build())
             }
