@@ -29,10 +29,24 @@
         android:id="@+id/editTemplateFragment"
         android:name="ro.unibuc.cs.memeow.ui.EditTemplateFragment"
         android:label="Edit Meme"
-        tools:layout="@layout/fragment_edit_template" />
+        tools:layout="@layout/fragment_edit_template">
+        <action
+            android:id="@+id/action_edit_to_viewMeme"
+            app:destination="@id/viewMemeFragment"
+            app:popUpTo="@id/nav_home" />
+    </fragment>
     <fragment
         android:id="@+id/login_fragment"
         android:name="ro.unibuc.cs.memeow.ui.LoginFragment"
         android:label="@string/login"
         tools:layout="@layout/fragment_login" />
+    <fragment
+        android:id="@+id/viewMemeFragment"
+        android:name="ro.unibuc.cs.memeow.ui.ViewMemeFragment"
+        android:label="View Meme"
+        tools:layout="@layout/fragment_view_meme">
+        <argument
+            android:name="memeObject"
+            app:argType="ro.unibuc.cs.memeow.model.PostedMemeResponse" />
+    </fragment>
 </navigation>

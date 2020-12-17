@@ -54,9 +54,11 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         if (BuildConfig.DEBUG) {
-            val s = sharedPrefs.getString(API_KEY, null) ?: "Not logged in! (Missing JWT token)"
-            Log.e(TAG, s)
-            Toast.makeText(this, s, Toast.LENGTH_SHORT).show()
+            if (sharedPrefs.getString(API_KEY, null) == null) {
+                val message = "Not logged in! (Missing JWT token)"
+                Log.e(TAG, message)
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

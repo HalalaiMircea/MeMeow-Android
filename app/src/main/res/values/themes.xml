@@ -22,4 +22,9 @@
     <style name="Theme.MeMeowAndroid.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.MeMeowAndroid.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ThemeOverlay.MeMeowAndroid.FullscreenContainer" parent="">
+        <item name="fullscreenBackgroundColor">@color/black</item>
+        <item name="fullscreenTextColor">@color/white</item>
+    </style>
 </resources>

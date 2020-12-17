@@ -1,6 +1,5 @@
 package ro.unibuc.cs.memeow.ui
 
-import android.annotation.SuppressLint
 import android.graphics.*
 import android.os.Bundle
 import android.text.Editable
@@ -10,11 +9,11 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -23,17 +22,9 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.MediaType
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import ro.unibuc.cs.memeow.R
-import ro.unibuc.cs.memeow.api.MemeowApi
 import ro.unibuc.cs.memeow.databinding.FragmentEditTemplateBinding
-import java.io.ByteArrayOutputStream
-import javax.inject.Inject
+import ro.unibuc.cs.memeow.model.PostedMemeResponse
 
 @AndroidEntryPoint
 class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
@@ -42,7 +33,6 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
     private val editorViewModel: EditorViewModel by activityViewModels()
     private val userViewModel: UserViewModel by activityViewModels()
 
-    @Inject lateinit var memeowApi: MemeowApi
     private lateinit var editTextWatcher: EditTextWatcher
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,12 +61,11 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         val imgMeme = binding.imgMeme
         val container = binding.imgTextContainer
         // If we get here from TemplateListFrag, we check if user's logged in
-        userViewModel.loggedInState.observe(viewLifecycleOwner) { loggedState: Boolean ->
+        userViewModel.loggedInState.observe(viewLifecycleOwner, { loggedState ->
             if (!loggedState) {
                 findNavController().navigate(R.id.login_fragment)
             }
-        }
-
+        })
         editTextWatcher = EditTextWatcher(null)
         editTextBox.addTextChangedListener(editTextWatcher)
 
@@ -114,29 +103,17 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
             container.layout(container.left, container.top, container.right, container.bottom)
             container.draw(canvas)
 
-            val stream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+            editorViewModel.uploadMemeImage(bitmap)
 
-            val image = MultipartBody.Part.createFormData(
-                "file", "", RequestBody.create(MediaType.parse("image/png"), stream.toByteArray())
-            )
-            val templateId = editorViewModel.currentTemplate.templateName
-
-            memeowApi.uploadMeme(image, templateId).enqueue(object : Callback<String> {
-                override fun onResponse(call: Call<String>, response: Response<String>) {
-                    val result = if (response.isSuccessful)
-                        response.body()
-                    else
-                        response.message() + response.code()
-                    Toast.makeText(context, result.toString(), Toast.LENGTH_LONG).show()
-                    Log.e(TAG, "onResponse: ${result.toString()}")
-                }
-
-                override fun onFailure(call: Call<String>, t: Throwable) {
-                    Toast.makeText(context, t.toString(), Toast.LENGTH_LONG).show()
-                }
-            })
         }
+
+        editorViewModel.newMemeLink.observe(viewLifecycleOwner, { memeObj: PostedMemeResponse ->
+            // Clear the previous liveData so that each time we select a new template on the same activity
+            // instance we don't trigger this observer
+            editorViewModel.newMemeLink = MutableLiveData()
+            val action = EditTemplateFragmentDirections.actionEditToViewMeme(memeObj)
+            findNavController().navigate(action)
+        })
     }
 
     override fun onDestroyView() {
@@ -150,7 +127,6 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
      * (layout params, hint, textSize, textColor, touch and click listeners).
      * Also changes the target of the TextWatcher to this new textView.
      */
-    @SuppressLint("ClickableViewAccessibility")
     private fun addTextView(touchListener: CustomTouchListener): TextView {
         val textView = TextView(context).apply {
             layoutParams = ViewGroup.LayoutParams(
@@ -204,9 +180,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         override fun onTouch(view: View, event: MotionEvent): Boolean {
             val newX: Float
             val newY: Float
-            if (event.action == MotionEvent.ACTION_UP
-                && event.eventTime - event.downTime < clickThreshold
-            ) {
+            if (event.action == MotionEvent.ACTION_UP && event.eventTime - event.downTime < clickThreshold) {
                 view.performClick()
                 return true
             }

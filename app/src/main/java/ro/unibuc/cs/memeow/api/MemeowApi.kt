@@ -5,6 +5,7 @@ import retrofit2.Call
 import retrofit2.http.*
 import ro.unibuc.cs.memeow.model.FacebookAuthUser
 import ro.unibuc.cs.memeow.model.MemeTemplate
+import ro.unibuc.cs.memeow.model.PostedMemeResponse
 import ro.unibuc.cs.memeow.model.ServerAuthResponse
 
 interface MemeowApi {
@@ -29,7 +30,9 @@ interface MemeowApi {
 
     @Multipart
     @POST("memes/create")
-    fun uploadMeme(@Part image: MultipartBody.Part, @Part("templateName") templateId: String): Call<String>
+    fun uploadMeme(
+        @Part image: MultipartBody.Part, @Part("templateName") templateId: String
+    ): Call<PostedMemeResponse>
 
     companion object {
         const val BASE_URL = "https://memeow-dev.herokuapp.com/api/"
