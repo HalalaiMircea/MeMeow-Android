@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MeMeow-Android</string>
+    <string name="app_name">MeMeow</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
@@ -8,10 +8,9 @@
     <string name="action_settings">Settings</string>
     <string name="login">Login</string>
     <string name="menu_home">Home</string>
-    <string name="menu_slideshow">Slideshow</string>
     <string name="meme_template">Meme Template</string>
     <string name="create_meme">Create Meme</string>
-    <string name="write_some_funny_text">Write some funny text...</string>
+    <string name="write_some_funny_text">Write some funny text…</string>
     <string name="retry">Retry</string>
     <string name="failed_loading_images">Failed loading images</string>
     <string name="meme_not_found">No template found for your query</string>
@@ -21,5 +20,8 @@
     <string name="add_text">Add Text</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="profile">Profile</string>
+    <string name="edit_meme">Edit Meme</string>
+    <string name="view_meme">View Meme</string>
 
 </resources>

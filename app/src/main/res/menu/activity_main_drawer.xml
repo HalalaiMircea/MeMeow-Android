@@ -13,12 +13,8 @@
             android:icon="@drawable/ic_baseline_create_24"
             android:title="@string/create_meme" />
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
-        <!--<item
-            android:id="@+id/nav_login"
-            android:icon="@drawable/ic_baseline_login_24"
-            android:title="@string/login" />-->
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_baseline_person_24"
+            android:title="@string/profile" />
     </group>
 </menu>

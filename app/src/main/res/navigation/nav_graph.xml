@@ -21,14 +21,9 @@
             app:destination="@id/editTemplateFragment" />
     </fragment>
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="ro.unibuc.cs.memeow.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
-    <fragment
         android:id="@+id/editTemplateFragment"
         android:name="ro.unibuc.cs.memeow.ui.EditTemplateFragment"
-        android:label="Edit Meme"
+        android:label="@string/edit_meme"
         tools:layout="@layout/fragment_edit_template">
         <action
             android:id="@+id/action_edit_to_viewMeme"
@@ -43,10 +38,15 @@
     <fragment
         android:id="@+id/viewMemeFragment"
         android:name="ro.unibuc.cs.memeow.ui.ViewMemeFragment"
-        android:label="View Meme"
+        android:label="@string/view_meme"
         tools:layout="@layout/fragment_view_meme">
         <argument
             android:name="memeObject"
             app:argType="ro.unibuc.cs.memeow.model.PostedMemeResponse" />
     </fragment>
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="ro.unibuc.cs.memeow.ui.ProfileFragment"
+        android:label="@string/profile"
+        tools:layout="@layout/fragment_profile" />
 </navigation>

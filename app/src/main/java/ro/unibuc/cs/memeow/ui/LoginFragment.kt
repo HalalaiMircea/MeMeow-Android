@@ -32,7 +32,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     private lateinit var callbackManager: CallbackManager
     @Inject lateinit var memeowApi: MemeowApi
 
-    //TODO: Improve logging in process. Either remove the token when user logs out, or refresh the token
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentLoginBinding.bind(view)
         savedStateHandle = findNavController().previousBackStackEntry!!.savedStateHandle
