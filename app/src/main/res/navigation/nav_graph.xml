@@ -42,11 +42,17 @@
         tools:layout="@layout/fragment_view_meme">
         <argument
             android:name="memeObject"
-            app:argType="ro.unibuc.cs.memeow.model.PostedMemeResponse" />
+            app:argType="ro.unibuc.cs.memeow.model.PostedMeme" />
     </fragment>
     <fragment
         android:id="@+id/nav_profile"
         android:name="ro.unibuc.cs.memeow.ui.ProfileFragment"
         android:label="@string/profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <argument
+            android:name="profileUUID"
+            android:defaultValue="@null"
+            app:argType="string"
+            app:nullable="true" />
+    </fragment>
 </navigation>

@@ -17,7 +17,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import ro.unibuc.cs.memeow.api.MemeowApi
 import ro.unibuc.cs.memeow.model.MemeTemplate
-import ro.unibuc.cs.memeow.model.PostedMemeResponse
+import ro.unibuc.cs.memeow.model.PostedMeme
 import ro.unibuc.cs.memeow.model.TemplateRepository
 import java.io.ByteArrayOutputStream
 
@@ -31,7 +31,7 @@ class EditorViewModel @ViewModelInject constructor(
 
     lateinit var currentTemplate: MemeTemplate
 
-    var newMemeLink: MutableLiveData<PostedMemeResponse> = MutableLiveData()
+    var newMemeLink: MutableLiveData<PostedMeme> = MutableLiveData()
 
     fun uploadMemeImage(bitmap: Bitmap) {
         val stream = ByteArrayOutputStream()
@@ -41,15 +41,15 @@ class EditorViewModel @ViewModelInject constructor(
             "file", "", RequestBody.create(MediaType.parse("image/png"), stream.toByteArray())
         )
         val templateId = currentTemplate.templateName
-        memeowApi.uploadMeme(image, templateId).enqueue(object : Callback<PostedMemeResponse> {
-            override fun onResponse(call: Call<PostedMemeResponse>, response: Response<PostedMemeResponse>) {
+        memeowApi.uploadMeme(image, templateId).enqueue(object : Callback<PostedMeme> {
+            override fun onResponse(call: Call<PostedMeme>, response: Response<PostedMeme>) {
                 if (response.isSuccessful)
                     newMemeLink.value = response.body()
                 else
                     Log.e(TAG, response.message() + response.code())
             }
 
-            override fun onFailure(call: Call<PostedMemeResponse>, t: Throwable) {
+            override fun onFailure(call: Call<PostedMeme>, t: Throwable) {
                 //newMemeLink.value = t.toString()
                 Log.e(TAG, t.toString())
             }

@@ -23,5 +23,7 @@
     <string name="profile">Profile</string>
     <string name="edit_meme">Edit Meme</string>
     <string name="view_meme">View Meme</string>
+    <string name="level_d">Level %d</string>
+    <string name="xp_dd">XP: %d/%d</string>
 
 </resources>

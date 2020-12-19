@@ -19,9 +19,22 @@ data class ServerAuthResponse(
 )
 
 @Parcelize
-data class PostedMemeResponse(
+data class PostedMeme(
     val memeBusinessId: String,
     val memeUrl: String,
     val reactionCount: Int,
     val dateTimeUtc: String
 ) : Parcelable
+
+data class Profile(
+    val username: String?,
+    val email: String,
+    val firstName: String,
+    val lastName: String,
+    val iconUrl: String?,
+    val userRole: String,
+    val currentXp: Int,
+    val currentLevel: Int,
+    val profileUuid: String,
+    val lastMeme: PostedMeme
+)

@@ -24,7 +24,7 @@ import com.bumptech.glide.request.target.Target
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentEditTemplateBinding
-import ro.unibuc.cs.memeow.model.PostedMemeResponse
+import ro.unibuc.cs.memeow.model.PostedMeme
 
 @AndroidEntryPoint
 class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
@@ -107,7 +107,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
 
         }
 
-        editorViewModel.newMemeLink.observe(viewLifecycleOwner, { memeObj: PostedMemeResponse ->
+        editorViewModel.newMemeLink.observe(viewLifecycleOwner, { memeObj: PostedMeme ->
             // Clear the previous liveData so that each time we select a new template on the same activity
             // instance we don't trigger this observer
             editorViewModel.newMemeLink = MutableLiveData()
