@@ -1,7 +1,7 @@
 package ro.unibuc.cs.memeow.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 data class FacebookAuthUser(
     val accessToken: String,

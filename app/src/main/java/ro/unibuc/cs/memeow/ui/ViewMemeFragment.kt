@@ -17,10 +17,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentViewMemeBinding
 
-/**
- * An example full-screen fragment that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
 @Suppress("DEPRECATION")
 @AndroidEntryPoint
 class ViewMemeFragment : Fragment(R.layout.fragment_view_meme) {

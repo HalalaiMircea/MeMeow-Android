@@ -22,7 +22,7 @@ import ro.unibuc.cs.memeow.model.TemplateRepository
 import java.io.ByteArrayOutputStream
 
 class EditorViewModel @ViewModelInject constructor(
-    private val repository: TemplateRepository,
+    repository: TemplateRepository,
     private val memeowApi: MemeowApi
 ) : ViewModel() {
 
@@ -31,7 +31,7 @@ class EditorViewModel @ViewModelInject constructor(
 
     lateinit var currentTemplate: MemeTemplate
 
-    var newMemeLink: MutableLiveData<PostedMeme> = MutableLiveData()
+    var newMemeLink = MutableLiveData<PostedMeme>()
 
     fun uploadMemeImage(bitmap: Bitmap) {
         val stream = ByteArrayOutputStream()

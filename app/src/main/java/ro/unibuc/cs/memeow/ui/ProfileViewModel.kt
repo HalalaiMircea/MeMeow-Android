@@ -1,20 +1,24 @@
 package ro.unibuc.cs.memeow.ui
 
+import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.SavedStateHandle
 import ro.unibuc.cs.memeow.model.Profile
 import ro.unibuc.cs.memeow.model.ProfileRepository
+import ro.unibuc.cs.memeow.util.ArgsViewModel
 
 class ProfileViewModel @ViewModelInject constructor(
-    private val repository: ProfileRepository,
-) : ViewModel() {
+    repository: ProfileRepository,
+    @Assisted savedStateHandle: SavedStateHandle
+) : ArgsViewModel(savedStateHandle) {
 
-    fun getProfile(uuid: String?): LiveData<Profile> {
-        return if (uuid != null)
-            repository.getUserProfile(uuid)
-        else
-            repository.getOwnProfile()
+    private val args: ProfileFragmentArgs by navArgs()
+
+    val profile: LiveData<Profile> = if (args.profileUUID != null) {
+        repository.getUserProfile(args.profileUUID!!)
+    } else {
+        repository.getOwnProfile()
     }
 
     companion object {

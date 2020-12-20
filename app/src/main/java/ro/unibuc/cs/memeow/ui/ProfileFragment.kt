@@ -2,24 +2,22 @@ package ro.unibuc.cs.memeow.ui
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentProfileBinding
+import ro.unibuc.cs.memeow.util.BaseFragment
 
 @AndroidEntryPoint
-class ProfileFragment : Fragment(R.layout.fragment_profile) {
+class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private val userViewModel: UserViewModel by activityViewModels()
     private val profileViewModel: ProfileViewModel by viewModels()
-    private val args: ProfileFragmentArgs by navArgs()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,15 +40,18 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentProfileBinding.bind(view)
-
         // Redirect to login when user isn't logged in
         userViewModel.loggedInState.observe(viewLifecycleOwner, { loggedState ->
             if (!loggedState) {
                 findNavController().navigate(R.id.login_fragment)
+            } else {
+                onLoggedIn()
             }
         })
-        //TODO: Figure out a way to pass navArgs to viewModel via constructor
-        profileViewModel.getProfile(args.profileUUID).observe(viewLifecycleOwner, { profile ->
+    }
+
+    private fun onLoggedIn() {
+        profileViewModel.profile.observe(viewLifecycleOwner, { profile ->
             Glide.with(this@ProfileFragment)
                 .load(profile.iconUrl)
                 .circleCrop()
@@ -71,5 +72,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        private const val TAG = "ProfileFragment"
     }
 }
