@@ -16,7 +16,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
@@ -24,6 +23,7 @@ import com.bumptech.glide.request.target.Target
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentEditTemplateBinding
+import ro.unibuc.cs.memeow.injection.GlideApp
 import ro.unibuc.cs.memeow.model.PostedMeme
 
 @AndroidEntryPoint
@@ -70,7 +70,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         editTextBox.addTextChangedListener(editTextWatcher)
 
         // Load the currently selected template from the view model
-        Glide.with(this)
+        GlideApp.with(this)
             .asBitmap()
             .listener(object : RequestListener<Bitmap> {
                 override fun onLoadFailed(

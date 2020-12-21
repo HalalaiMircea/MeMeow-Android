@@ -52,28 +52,25 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.2'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.2'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.2.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+    implementation 'androidx.paging:paging-runtime-ktx:3.0.0-alpha10'
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    // Facebook
+    // Facebook SDK
     implementation 'com.facebook.android:facebook-login:8.1.0'
 
-    // Retrofit http client
-    def retrofitVersion = '2.9.0'
+    // Retrofit (http client)
     implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     implementation "com.squareup.retrofit2:converter-scalars:$retrofitVersion"
 
-    // Image loading, paging optimisation
-    implementation 'com.github.bumptech.glide:glide:4.11.0'
-    implementation 'androidx.paging:paging-runtime-ktx:3.0.0-alpha10'
+    // Glide (image loader)
+    implementation "com.github.bumptech.glide:glide:$glideVersion"
+    kapt "com.github.bumptech.glide:compiler:$glideVersion"
 
-    // Dagger Hilt
-    def hiltAndroidXVersion = '1.0.0-alpha02'
+    // Dagger Hilt (dependency injection)
     implementation "com.google.dagger:hilt-android:$hiltVersion"
     kapt "com.google.dagger:hilt-android-compiler:$hiltVersion"
     implementation "androidx.hilt:hilt-lifecycle-viewmodel:$hiltAndroidXVersion"

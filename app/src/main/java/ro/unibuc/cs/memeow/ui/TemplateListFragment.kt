@@ -11,12 +11,12 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentTemplateListBinding
 import ro.unibuc.cs.memeow.databinding.LayoutTemplateItemBinding
+import ro.unibuc.cs.memeow.injection.GlideApp
 import ro.unibuc.cs.memeow.model.MemeTemplate
 
 @AndroidEntryPoint
@@ -77,7 +77,7 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
             }
 
             fun bind(template: MemeTemplate) {
-                Glide.with(itemView)
+                GlideApp.with(itemView)
                     .load(template.imageUrl)
                     .centerCrop()
                     .transition(DrawableTransitionOptions.withCrossFade())

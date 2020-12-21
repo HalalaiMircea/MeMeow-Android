@@ -6,10 +6,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentProfileBinding
+import ro.unibuc.cs.memeow.injection.GlideApp
 import ro.unibuc.cs.memeow.model.Profile
 import ro.unibuc.cs.memeow.util.BaseFragment
 import java.text.DateFormat
@@ -55,22 +55,27 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
     private fun onLoggedIn(profile: Profile) {
         val brokenImageRes = R.drawable.ic_baseline_broken_image_24
         val fullName = profile.firstName + " " + profile.lastName
+        val maxExp = 100
 
-        Glide.with(this)
+        GlideApp.with(this)
             .load(profile.iconUrl).circleCrop().error(brokenImageRes)
             .into(binding.imageProfile)
 
-        Glide.with(this)
+        GlideApp.with(this)
             .load(profile.lastMeme.memeUrl).centerCrop().error(brokenImageRes)
             .into(binding.imageLastMeme)
 
         with(binding) {
             textName.text = fullName
             textLevel.text = getString(R.string.level_d, profile.currentLevel)
-            textExp.text = getString(R.string.xp_dd, profile.currentXp, 100)
-            barExp.max = 100
+            textExp.text = getString(R.string.xp_dd, profile.currentXp, maxExp)
+            barExp.max = maxExp
             barExp.progress = profile.currentXp
             textLastMemeDate.text = DateFormat.getDateInstance().format(profile.lastMeme.dateTimeUtc)
+        }
+        binding.imageLastMeme.setOnClickListener {
+            val action = ProfileFragmentDirections.actionViewLastMeme(profile.lastMeme)
+            findNavController().navigate(action)
         }
     }
 

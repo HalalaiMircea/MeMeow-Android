@@ -12,10 +12,10 @@ import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentViewMemeBinding
+import ro.unibuc.cs.memeow.injection.GlideApp
 
 @Suppress("DEPRECATION")
 @AndroidEntryPoint
@@ -74,7 +74,7 @@ class ViewMemeFragment : Fragment(R.layout.fragment_view_meme) {
         visible = true
         // Set up the user interaction to manually show or hide the system UI.
         binding.fullscreenContent.setOnClickListener { toggle() }
-        Glide.with(this)
+        GlideApp.with(this)
             .load(args.memeObject.memeUrl)
             .error(R.drawable.ic_baseline_broken_image_24)
             .into(binding.fullscreenContent)

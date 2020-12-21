@@ -25,6 +25,6 @@
     <string name="view_meme">View Meme</string>
     <string name="level_d">Level %d</string>
     <string name="xp_dd">XP: %d/%d</string>
-    <string name="featured_meme">Featured meme</string>
+    <string name="featured_meme">Latest meme</string>
 
 </resources>
