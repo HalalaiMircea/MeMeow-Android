@@ -11,7 +11,6 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentTemplateListBinding
@@ -80,8 +79,6 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
                 GlideApp.with(itemView)
                     .load(template.imageUrl)
                     .centerCrop()
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .error(R.drawable.ic_baseline_broken_image_24)
                     .into(binding.templateImg)
                 binding.templateTitle.text = template.templateName
                 this.template = template

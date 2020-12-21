@@ -10,6 +10,7 @@ import javax.inject.Singleton
 @Singleton
 class TemplateRepository @Inject constructor(private val memeowApi: MemeowApi) {
 
+    // maxSize >= pageSize + 2*prefetchDist
     fun getTemplateResults(search: String?) =
         Pager(
             config = PagingConfig(

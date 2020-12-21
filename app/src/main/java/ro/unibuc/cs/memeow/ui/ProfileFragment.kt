@@ -53,16 +53,17 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
     }
 
     private fun onLoggedIn(profile: Profile) {
-        val brokenImageRes = R.drawable.ic_baseline_broken_image_24
         val fullName = profile.firstName + " " + profile.lastName
         val maxExp = 100
 
         GlideApp.with(this)
-            .load(profile.iconUrl).circleCrop().error(brokenImageRes)
+            .load(profile.iconUrl)
+            .circleCrop()
             .into(binding.imageProfile)
 
         GlideApp.with(this)
-            .load(profile.lastMeme.memeUrl).centerCrop().error(brokenImageRes)
+            .load(profile.lastMeme.memeUrl)
+            .centerCrop()
             .into(binding.imageLastMeme)
 
         with(binding) {

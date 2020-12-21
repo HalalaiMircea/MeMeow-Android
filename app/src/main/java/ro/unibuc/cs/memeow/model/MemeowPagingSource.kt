@@ -24,7 +24,6 @@ class MemeowPagingSource(
 //            }
             //memeowApi.getUnavailableTemplates(searchQuery, position, params.loadSize)
 
-
             // If we reached the end of available memes, unavailable memes will follow in next pages
             // This var is 0 only when didn't load any unavailable memes
             // list is empty and var is 0 only when we reached the end of available memes

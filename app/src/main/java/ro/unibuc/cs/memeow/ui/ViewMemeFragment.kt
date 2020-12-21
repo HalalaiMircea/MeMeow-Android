@@ -76,7 +76,6 @@ class ViewMemeFragment : Fragment(R.layout.fragment_view_meme) {
         binding.fullscreenContent.setOnClickListener { toggle() }
         GlideApp.with(this)
             .load(args.memeObject.memeUrl)
-            .error(R.drawable.ic_baseline_broken_image_24)
             .into(binding.fullscreenContent)
 
         // Upon interacting with UI controls, delay any scheduled hide()

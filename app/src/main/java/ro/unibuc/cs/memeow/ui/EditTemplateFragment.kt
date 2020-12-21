@@ -94,7 +94,6 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                 }
             })
             .load(fullSizeImgUrl)
-            .error(R.drawable.ic_baseline_broken_image_24)
             .into(imgMeme)
 
         binding.buttonRender.setOnClickListener {
