@@ -1,12 +1,13 @@
 package ro.unibuc.cs.memeow.ui
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.findNavController
+import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
@@ -24,18 +25,76 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
     private val binding get() = _binding!!
     private val viewModel: EditorViewModel by activityViewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentTemplateListBinding.bind(view)
 
         val templateList = binding.templateList
         val adapter = RecyclerAdapter(viewModel)
-        templateList.layoutManager = GridLayoutManager(context, 2)
-        templateList.adapter = adapter
+
+        val gridLayoutManager = GridLayoutManager(context, 2)
+        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+            override fun getSpanSize(position: Int): Int =
+                if (adapter.getItemViewType(position) == RecyclerAdapter.TEMPLATE_VIEW_TYPE) 1 else 2
+        }
+        templateList.adapter = adapter.withLoadStateFooter(
+            MyLoadStateAdapter { adapter.retry() }
+        )
+        templateList.layoutManager = gridLayoutManager
         templateList.setHasFixedSize(true)
+
+        binding.buttonRetry.setOnClickListener { adapter.retry() }
 
         viewModel.templates.observe(viewLifecycleOwner) {
             adapter.submitData(viewLifecycleOwner.lifecycle, it)
         }
+
+        // Show retry button and errors in recycler view layout
+        adapter.addLoadStateListener { loadStates ->
+            binding.apply {
+                progressBar.isVisible = loadStates.source.refresh is LoadState.Loading
+                this.templateList.isVisible = loadStates.source.refresh is LoadState.NotLoading
+                buttonRetry.isVisible = loadStates.source.refresh is LoadState.Error
+                textViewError.isVisible = loadStates.source.refresh is LoadState.Error
+
+                // In case of no result query for recycler view
+                if (loadStates.source.refresh is LoadState.NotLoading &&
+                    loadStates.append.endOfPaginationReached &&
+                    adapter.itemCount < 1
+                ) {
+                    this.templateList.isVisible = false
+                    textViewEmpty.isVisible = true
+                } else {
+                    textViewEmpty.isVisible = false
+                }
+            }
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_templates, menu)
+
+        val searchItem = menu.findItem(R.id.action_search)
+        val searchView = searchItem.actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                if (query != null) {
+                    binding.templateList.scrollToPosition(0)
+                    viewModel.searchTemplate(query)
+                    searchView.clearFocus()
+                }
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                return true
+            }
+
+        })
     }
 
     override fun onDestroyView() {
@@ -58,6 +117,10 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
             if (currentItem != null) {
                 holder.bind(currentItem)
             }
+        }
+
+        override fun getItemViewType(position: Int): Int {
+            return if (position == itemCount) NETWORK_VIEW_TYPE else TEMPLATE_VIEW_TYPE
         }
 
         class ViewHolder(
@@ -96,6 +159,8 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
                 override fun areContentsTheSame(oldItem: MemeTemplate, newItem: MemeTemplate) =
                     oldItem == newItem
             }
+            const val NETWORK_VIEW_TYPE = 1337
+            const val TEMPLATE_VIEW_TYPE = 69
         }
     }
 }

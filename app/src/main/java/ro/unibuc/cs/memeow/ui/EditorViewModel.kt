@@ -3,10 +3,7 @@ package ro.unibuc.cs.memeow.ui
 import android.graphics.Bitmap
 import android.util.Log
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import okhttp3.MediaType
@@ -26,12 +23,19 @@ class EditorViewModel @ViewModelInject constructor(
     private val memeowApi: MemeowApi
 ) : ViewModel() {
 
-    val templates: LiveData<PagingData<MemeTemplate>> =
-        repository.getTemplateResults(null).cachedIn(viewModelScope)
+    private val currentQuery = MutableLiveData<String?>(null)
 
-    lateinit var currentTemplate: MemeTemplate
+    val templates: LiveData<PagingData<MemeTemplate>> =
+        currentQuery.switchMap { queryString ->
+            repository.getTemplateResults(queryString).cachedIn(viewModelScope)
+        }
 
     var newMemeLink = MutableLiveData<PostedMeme>()
+    lateinit var currentTemplate: MemeTemplate
+
+    fun searchTemplate(query: String) {
+        currentQuery.value = query
+    }
 
     fun uploadMemeImage(bitmap: Bitmap) {
         val stream = ByteArrayOutputStream()
