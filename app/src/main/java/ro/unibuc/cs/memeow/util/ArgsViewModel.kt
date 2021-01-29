@@ -12,7 +12,8 @@ open class ArgsViewModel(private val savedStateHandle: SavedStateHandle) : ViewM
     val arguments get() = savedStateHandle.get<Bundle>(BUNDLE_ARGS)
 
     @MainThread
-    inline fun <reified Args : NavArgs> navArgs() = NavArgsLazy(Args::class) {
-        arguments ?: throw IllegalStateException("ViewModel $this has null arguments")
-    }
+    inline fun <reified Args : NavArgs> navArgs() =
+        NavArgsLazy(Args::class) {
+            arguments ?: throw IllegalStateException("ViewModel $this has null arguments")
+        }
 }

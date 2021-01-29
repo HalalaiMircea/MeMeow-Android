@@ -3,7 +3,7 @@ buildscript {
     ext {
         kotlin_version = "1.4.21"
         nav_version = "2.3.2"
-        hiltVersion = '2.31-alpha'
+        hiltVersion = '2.31.2-alpha'
         retrofitVersion = '2.9.0'
         glideVersion = '4.11.0'
         hiltAndroidXVersion = '1.0.0-alpha02'
@@ -14,7 +14,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:4.1.1"
+        classpath 'com.android.tools.build:gradle:4.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "androidx.navigation:navigation-safe-args-gradle-plugin:$nav_version"
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hiltVersion"

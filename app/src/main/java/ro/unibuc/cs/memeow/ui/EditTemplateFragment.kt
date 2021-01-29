@@ -103,7 +103,6 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
             container.draw(canvas)
 
             editorViewModel.uploadMemeImage(bitmap)
-
         }
 
         editorViewModel.newMemeLink.observe(viewLifecycleOwner, { memeObj: PostedMeme ->

@@ -10,19 +10,19 @@ import android.view.WindowInsetsController
 import android.view.WindowManager
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.navArgs
+import androidx.fragment.app.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
-import ro.unibuc.cs.memeow.databinding.FragmentViewMemeBinding
+import ro.unibuc.cs.memeow.databinding.FragmentMemeBinding
 import ro.unibuc.cs.memeow.injection.GlideApp
+import ro.unibuc.cs.memeow.util.BaseFragment
 
 @Suppress("DEPRECATION")
 @AndroidEntryPoint
-class ViewMemeFragment : Fragment(R.layout.fragment_view_meme) {
-    private var _binding: FragmentViewMemeBinding? = null
+class MemeFragment : BaseFragment(R.layout.fragment_meme) {
+    private var _binding: FragmentMemeBinding? = null
     private val binding get() = _binding!!
-    private val args: ViewMemeFragmentArgs by navArgs()
+    private val memeViewModel: MemeViewModel by viewModels()
 
     private lateinit var hideHandler: Handler
     private lateinit var fullscreenContentControls: LinearLayout
@@ -49,7 +49,7 @@ class ViewMemeFragment : Fragment(R.layout.fragment_view_meme) {
         activity.supportActionBar!!.hide()
     }
     private var visible: Boolean = false
-    private val hideRunnable = Runnable(this@ViewMemeFragment::hide)
+    private val hideRunnable = Runnable(this@MemeFragment::hide)
     private val showPart2Runnable = Runnable {
         // Delayed display of UI elements
         fullscreenContentControls.visibility = View.VISIBLE
@@ -65,7 +65,7 @@ class ViewMemeFragment : Fragment(R.layout.fragment_view_meme) {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        _binding = FragmentViewMemeBinding.bind(view)
+        _binding = FragmentMemeBinding.bind(view)
 
         // Don't remove these. They may appear redundant, but idk, android's fault
         hideHandler = view.handler
@@ -74,14 +74,19 @@ class ViewMemeFragment : Fragment(R.layout.fragment_view_meme) {
         visible = true
         // Set up the user interaction to manually show or hide the system UI.
         binding.fullscreenContent.setOnClickListener { toggle() }
-        GlideApp.with(this)
-            .load(args.memeObject.memeUrl)
-            .into(binding.fullscreenContent)
+        memeViewModel.postedMeme.observe(viewLifecycleOwner) {
+            GlideApp.with(this)
+                .load(it.memeUrl)
+                .into(binding.fullscreenContent)
+
+            binding.likeButton.text = it.reactionCount.toString()
+        }
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        binding.dummyButton.setOnTouchListener(delayHideTouchListener)
+        binding.likeButton.setOnTouchListener(delayHideTouchListener)
+        binding.likeButton.setOnClickListener { memeViewModel.likeMeme() }
     }
 
     override fun onDestroyView() {

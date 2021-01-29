@@ -1,4 +1,4 @@
-package ro.unibuc.cs.memeow.ui
+package ro.unibuc.cs.memeow.util
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

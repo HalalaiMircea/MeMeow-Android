@@ -36,7 +36,6 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         _binding = FragmentLoginBinding.bind(view)
         savedStateHandle = findNavController().previousBackStackEntry!!.savedStateHandle
         savedStateHandle.set(LOGIN_SUCCESSFUL, false)
-        val loginFbButton = binding.loginFacebookButton
 
         val accessTokenTracker: AccessTokenTracker = object : AccessTokenTracker() {
             override fun onCurrentAccessTokenChanged(oldToken: AccessToken?, currentToken: AccessToken?) {
@@ -48,6 +47,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 }
             }
         }
+        val loginFbButton = binding.loginFacebookButton
         loginFbButton.fragment = this
         loginFbButton.setPermissions(listOf("email"))
         callbackManager = CallbackManager.Factory.create()
@@ -86,8 +86,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 savedStateHandle.set(LOGIN_SUCCESSFUL, true)
                 findNavController().popBackStack()
             } else {
-                val message = "MeMeow service not available. Try again later..."
-                Log.e(TAG, "onResponse: $message code ${response.code()}")
+                val message = "MeMeow service not available. Try again later... code ${response.code()}"
+                Log.e(TAG, "onResponse: $message")
                 Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             }
         }

@@ -33,9 +33,10 @@ interface MemeowApi {
 
     @Multipart
     @POST("memes/create")
-    fun uploadMeme(
-        @Part image: MultipartBody.Part, @Part("templateName") templateId: String
-    ): Call<PostedMeme>
+    fun uploadMeme(@Part image: MultipartBody.Part, @Part("templateName") tempId: String): Call<PostedMeme>
+
+    @PUT("memes/{id}/like")
+    fun likeMeme(@Path("id") id: String): Call<PostedMeme>
 
     companion object {
         const val BASE_URL = "https://memeow-dev.herokuapp.com/api/"

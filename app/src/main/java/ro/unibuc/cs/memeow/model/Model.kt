@@ -34,8 +34,14 @@ data class Profile(
     val lastName: String,
     val iconUrl: String?,
     val userRole: String,
-    val currentXp: Int,
-    val currentLevel: Int,
+    val level: Level,
     val profileUuid: String,
-    val lastMeme: PostedMeme
-)
+    val lastMeme: PostedMeme?
+) {
+    data class Level(
+        val currentXp: Int,
+        val currentLevel: Int,
+        val lastCurrentXp: Int,
+        val lastCurrentLevel: Int
+    )
+}

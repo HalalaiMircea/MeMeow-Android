@@ -2,10 +2,10 @@ package ro.unibuc.cs.memeow.ui
 
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import dagger.hilt.android.lifecycle.HiltViewModel
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -17,8 +17,10 @@ import ro.unibuc.cs.memeow.model.MemeTemplate
 import ro.unibuc.cs.memeow.model.PostedMeme
 import ro.unibuc.cs.memeow.model.TemplateRepository
 import java.io.ByteArrayOutputStream
+import javax.inject.Inject
 
-class EditorViewModel @ViewModelInject constructor(
+@HiltViewModel
+class EditorViewModel @Inject constructor(
     repository: TemplateRepository,
     private val memeowApi: MemeowApi
 ) : ViewModel() {

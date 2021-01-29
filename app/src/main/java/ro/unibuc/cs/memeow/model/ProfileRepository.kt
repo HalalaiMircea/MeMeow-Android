@@ -13,10 +13,9 @@ import javax.inject.Singleton
 @Singleton
 class ProfileRepository @Inject constructor(private val memeowApi: MemeowApi) {
 
-    fun getOwnProfile(): LiveData<Profile> {
+    fun getUserProfile(uuid: String?): LiveData<Profile> {
         val resultLiveData = MutableLiveData<Profile>()
-
-        memeowApi.getOwnProfile().enqueue(object : Callback<Profile> {
+        val callback = object : Callback<Profile> {
             override fun onResponse(call: Call<Profile>, response: Response<Profile>) {
                 if (response.isSuccessful)
                     resultLiveData.value = response.body()
@@ -27,25 +26,9 @@ class ProfileRepository @Inject constructor(private val memeowApi: MemeowApi) {
             override fun onFailure(call: Call<Profile>, t: Throwable) {
                 Log.e(TAG, "onFailure: $t")
             }
-        })
-        return resultLiveData
-    }
-
-    fun getUserProfile(uuid: String): LiveData<Profile> {
-        val resultLiveData = MutableLiveData<Profile>()
-
-        memeowApi.getUserProfile(uuid).enqueue(object : Callback<Profile> {
-            override fun onResponse(call: Call<Profile>, response: Response<Profile>) {
-                if (response.isSuccessful)
-                    resultLiveData.value = response.body()
-                else
-                    Log.e(TAG, "onResponse: ${response.message() + response.code()}")
-            }
-
-            override fun onFailure(call: Call<Profile>, t: Throwable) {
-                Log.e(TAG, "onFailure: $t")
-            }
-        })
+        }
+        val profileCall = if (uuid != null) memeowApi.getUserProfile(uuid) else memeowApi.getOwnProfile()
+        profileCall.enqueue(callback)
         return resultLiveData
     }
 

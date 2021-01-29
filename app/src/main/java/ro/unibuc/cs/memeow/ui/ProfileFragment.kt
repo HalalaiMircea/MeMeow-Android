@@ -1,7 +1,9 @@
 package ro.unibuc.cs.memeow.ui
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
@@ -47,6 +49,7 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
             if (!loggedState) {
                 findNavController().navigate(R.id.login_fragment)
             } else {
+                binding.lastMemeView.isVisible = false
                 profileViewModel.profile.observe(viewLifecycleOwner, this::onLoggedIn)
             }
         })
@@ -54,29 +57,33 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
 
     private fun onLoggedIn(profile: Profile) {
         val fullName = profile.firstName + " " + profile.lastName
-        val maxExp = 100
+        val maxExp = XP_TABLE[profile.level.currentLevel]
 
         GlideApp.with(this)
-            .load(profile.iconUrl)
-            .circleCrop()
-            .into(binding.imageProfile)
-
-        GlideApp.with(this)
-            .load(profile.lastMeme.memeUrl)
-            .centerCrop()
-            .into(binding.imageLastMeme)
+            .load(profile.iconUrl).circleCrop().into(binding.imageProfile)
 
         with(binding) {
             textName.text = fullName
-            textLevel.text = getString(R.string.level_d, profile.currentLevel)
-            textExp.text = getString(R.string.xp_dd, profile.currentXp, maxExp)
-            barExp.max = maxExp
-            barExp.progress = profile.currentXp
-            textLastMemeDate.text = DateFormat.getDateInstance().format(profile.lastMeme.dateTimeUtc)
+            textLevel.text = getString(R.string.level_d, profile.level.currentLevel)
+            textExp.text = getString(R.string.xp_dd, profile.level.currentXp, maxExp)
+            barExp.max = maxExp * 100
         }
-        binding.imageLastMeme.setOnClickListener {
-            val action = ProfileFragmentDirections.actionViewLastMeme(profile.lastMeme)
-            findNavController().navigate(action)
+        val startValue = profile.level.lastCurrentXp * 100
+        val endValue = profile.level.currentXp * 100
+        ObjectAnimator.ofInt(binding.barExp, "progress", startValue, endValue)
+            .setDuration(600)
+            .start()
+
+        // Last meme view related stuff
+        profile.lastMeme?.let { lastMeme ->
+            binding.lastMemeView.isVisible = true
+            GlideApp.with(this)
+                .load(lastMeme.memeUrl).centerCrop().into(binding.imageLastMeme)
+            binding.textLastMemeDate.text = DateFormat.getDateInstance().format(lastMeme.dateTimeUtc)
+            binding.imageLastMeme.setOnClickListener {
+                val action = ProfileFragmentDirections.actionViewLastMeme(lastMeme)
+                findNavController().navigate(action)
+            }
         }
     }
 
@@ -87,5 +94,6 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
 
     companion object {
         private const val TAG = "ProfileFragment"
+        private val XP_TABLE: IntArray = intArrayOf(0, 5, 10, 15, 25, 40, 60)
     }
 }

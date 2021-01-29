@@ -18,16 +18,16 @@
         tools:layout="@layout/fragment_template_list">
         <action
             android:id="@+id/action_select_template"
-            app:destination="@id/editTemplateFragment" />
+            app:destination="@id/edit_template_fragment" />
     </fragment>
     <fragment
-        android:id="@+id/editTemplateFragment"
+        android:id="@+id/edit_template_fragment"
         android:name="ro.unibuc.cs.memeow.ui.EditTemplateFragment"
         android:label="@string/edit_meme"
         tools:layout="@layout/fragment_edit_template">
         <action
             android:id="@+id/action_edit_to_viewMeme"
-            app:destination="@id/viewMemeFragment"
+            app:destination="@id/meme_fragment"
             app:popUpTo="@id/nav_home" />
     </fragment>
     <fragment
@@ -36,10 +36,10 @@
         android:label="@string/login"
         tools:layout="@layout/fragment_login" />
     <fragment
-        android:id="@+id/viewMemeFragment"
-        android:name="ro.unibuc.cs.memeow.ui.ViewMemeFragment"
+        android:id="@+id/meme_fragment"
+        android:name="ro.unibuc.cs.memeow.ui.MemeFragment"
         android:label="@string/view_meme"
-        tools:layout="@layout/fragment_view_meme">
+        tools:layout="@layout/fragment_meme">
         <argument
             android:name="memeObject"
             app:argType="ro.unibuc.cs.memeow.model.PostedMeme" />
@@ -56,6 +56,6 @@
             app:nullable="true" />
         <action
             android:id="@+id/action_view_last_meme"
-            app:destination="@id/viewMemeFragment" />
+            app:destination="@id/meme_fragment" />
     </fragment>
 </navigation>

@@ -1,5 +1,6 @@
 package ro.unibuc.cs.memeow.ui
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
@@ -18,6 +19,8 @@ import ro.unibuc.cs.memeow.databinding.FragmentTemplateListBinding
 import ro.unibuc.cs.memeow.databinding.LayoutTemplateItemBinding
 import ro.unibuc.cs.memeow.injection.GlideApp
 import ro.unibuc.cs.memeow.model.MemeTemplate
+import ro.unibuc.cs.memeow.util.MarginItemDecoration
+import ro.unibuc.cs.memeow.util.MyLoadStateAdapter
 
 @AndroidEntryPoint
 class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
@@ -33,24 +36,18 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentTemplateListBinding.bind(view)
 
-        val templateList = binding.templateList
         val adapter = RecyclerAdapter(viewModel)
 
-        val gridLayoutManager = GridLayoutManager(context, 2)
+        val spanCount =
+            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+                SPAN_COUNT_LANDSCAPE
+            else
+                SPAN_COUNT_PORTRAIT
+        // Configure footer to span across multiple columns
+        val gridLayoutManager = GridLayoutManager(context, spanCount)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int =
-                if (adapter.getItemViewType(position) == RecyclerAdapter.TEMPLATE_VIEW_TYPE) 1 else 2
-        }
-        templateList.adapter = adapter.withLoadStateFooter(
-            MyLoadStateAdapter { adapter.retry() }
-        )
-        templateList.layoutManager = gridLayoutManager
-        templateList.setHasFixedSize(true)
-
-        binding.buttonRetry.setOnClickListener { adapter.retry() }
-
-        viewModel.templates.observe(viewLifecycleOwner) {
-            adapter.submitData(viewLifecycleOwner.lifecycle, it)
+                if (adapter.getItemViewType(position) == RecyclerAdapter.TEMPLATE_VIEW_TYPE) 1 else spanCount
         }
 
         // Show retry button and errors in recycler view layout
@@ -73,6 +70,23 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
                 }
             }
         }
+        with(binding.templateList) {
+            this.adapter = adapter.withLoadStateFooter(MyLoadStateAdapter { adapter.retry() })
+            layoutManager = gridLayoutManager
+            addItemDecoration(
+                MarginItemDecoration(
+                    resources.getDimensionPixelOffset(R.dimen.recycler_view_item_spacing),
+                    spanCount
+                )
+            )
+            setHasFixedSize(true)
+        }
+
+        binding.buttonRetry.setOnClickListener { adapter.retry() }
+
+        viewModel.templates.observe(viewLifecycleOwner) {
+            adapter.submitData(viewLifecycleOwner.lifecycle, it)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -93,7 +107,6 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
             override fun onQueryTextChange(newText: String?): Boolean {
                 return true
             }
-
         })
     }
 
@@ -147,8 +160,7 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
                 this.template = template
             }
 
-            override fun toString() =
-                super.toString() + " '" + binding.templateTitle + "'"
+            override fun toString() = super.toString() + " '" + binding.templateTitle + "'"
         }
 
         companion object {
@@ -162,5 +174,10 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
             const val NETWORK_VIEW_TYPE = 1337
             const val TEMPLATE_VIEW_TYPE = 69
         }
+    }
+
+    companion object {
+        private const val SPAN_COUNT_PORTRAIT = 2
+        private const val SPAN_COUNT_LANDSCAPE = 4
     }
 }

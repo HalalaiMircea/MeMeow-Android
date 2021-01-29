@@ -66,6 +66,7 @@
         tools:text="XP: 1337/2000" />
 
     <androidx.cardview.widget.CardView
+        android:id="@+id/last_meme_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="48dp"
