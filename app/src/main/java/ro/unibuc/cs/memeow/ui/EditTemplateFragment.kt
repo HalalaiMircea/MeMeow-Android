@@ -25,13 +25,15 @@ import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentEditTemplateBinding
 import ro.unibuc.cs.memeow.injection.GlideApp
 import ro.unibuc.cs.memeow.model.PostedMeme
+import ro.unibuc.cs.memeow.model.ProfileRepository
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
     private var _binding: FragmentEditTemplateBinding? = null
     private val binding get() = _binding!!
     private val editorViewModel: EditorViewModel by activityViewModels()
-    private val userViewModel: UserViewModel by activityViewModels()
+    @Inject lateinit var userRepository: ProfileRepository
 
     private lateinit var editTextWatcher: EditTextWatcher
 
@@ -61,8 +63,8 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         val imgMeme = binding.imgMeme
         val container = binding.imgTextContainer
         // If we get here from TemplateListFrag, we check if user's logged in
-        userViewModel.loggedInState.observe(viewLifecycleOwner, { loggedState ->
-            if (!loggedState) {
+        userRepository.signedUserProfile.observe(viewLifecycleOwner, { profile ->
+            if (profile == null) {
                 findNavController().navigate(R.id.login_fragment)
             }
         })

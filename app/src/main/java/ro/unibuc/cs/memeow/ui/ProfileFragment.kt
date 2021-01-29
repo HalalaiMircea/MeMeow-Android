@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
@@ -20,8 +19,7 @@ import java.text.DateFormat
 class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
-    private val userViewModel: UserViewModel by activityViewModels()
-    private val profileViewModel: ProfileViewModel by viewModels()
+    private val viewModel: ProfileViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,13 +42,13 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentProfileBinding.bind(view)
-        // Redirect to login when user isn't logged in
-        userViewModel.loggedInState.observe(viewLifecycleOwner, { loggedState ->
-            if (!loggedState) {
+        // Redirect to login when user isn't logged in, even if it's not his profile
+        viewModel.repository.signedUserProfile.observe(viewLifecycleOwner, { ownProfile ->
+            if (ownProfile == null) {
                 findNavController().navigate(R.id.login_fragment)
             } else {
                 binding.lastMemeView.isVisible = false
-                profileViewModel.profile.observe(viewLifecycleOwner, this::onLoggedIn)
+                viewModel.profile.observe(viewLifecycleOwner, this::onLoggedIn)
             }
         })
     }

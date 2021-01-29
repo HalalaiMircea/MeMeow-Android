@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    repository: ProfileRepository,
+    val repository: ProfileRepository,
     savedStateHandle: SavedStateHandle
 ) : ArgsViewModel(savedStateHandle) {
 

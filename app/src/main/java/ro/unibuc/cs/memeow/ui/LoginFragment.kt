@@ -6,7 +6,6 @@ import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.fragment.findNavController
 import com.facebook.*
@@ -19,6 +18,7 @@ import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.api.MemeowApi
 import ro.unibuc.cs.memeow.databinding.FragmentLoginBinding
 import ro.unibuc.cs.memeow.model.FacebookAuthUser
+import ro.unibuc.cs.memeow.model.ProfileRepository
 import ro.unibuc.cs.memeow.model.ServerAuthResponse
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ import javax.inject.Inject
 class LoginFragment : Fragment(R.layout.fragment_login) {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
-    private val userViewModel: UserViewModel by activityViewModels()
+    @Inject lateinit var userRepository: ProfileRepository
 
     private lateinit var savedStateHandle: SavedStateHandle
     private lateinit var callbackManager: CallbackManager
@@ -43,7 +43,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     Log.d(TAG, "Logged in with Facebook SDK")
                 } else if (currentToken == null) {
                     Log.d(TAG, "Logged out with Facebook SDK, removing stored JWT...")
-                    userViewModel.removeJwtToken()
+                    userRepository.signOutUser()
                 }
             }
         }
@@ -82,9 +82,11 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     inner class MemeowAPICallback : Callback<ServerAuthResponse> {
         override fun onResponse(call: Call<ServerAuthResponse>, response: Response<ServerAuthResponse>) {
             if (response.isSuccessful) {
-                userViewModel.saveJwtToken(response.body()!!.jwtToken)
+                userRepository.signInUser(response.body()!!.jwtToken)
                 savedStateHandle.set(LOGIN_SUCCESSFUL, true)
-                findNavController().popBackStack()
+                userRepository.signedUserProfile.observe(viewLifecycleOwner) {
+                    if (it != null) findNavController().popBackStack()
+                }
             } else {
                 val message = "MeMeow service not available. Try again later... code ${response.code()}"
                 Log.e(TAG, "onResponse: $message")

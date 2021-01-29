@@ -18,7 +18,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import ro.unibuc.cs.memeow.ui.API_KEY
+import ro.unibuc.cs.memeow.model.API_KEY
 import javax.inject.Inject
 
 @AndroidEntryPoint
