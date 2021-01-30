@@ -83,9 +83,11 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         override fun onResponse(call: Call<ServerAuthResponse>, response: Response<ServerAuthResponse>) {
             if (response.isSuccessful) {
                 userRepository.signInUser(response.body()!!.jwtToken)
-                savedStateHandle.set(LOGIN_SUCCESSFUL, true)
                 userRepository.signedUserProfile.observe(viewLifecycleOwner) {
-                    if (it != null) findNavController().popBackStack()
+                    if (it != null) {
+                        savedStateHandle.set(LOGIN_SUCCESSFUL, true)
+                        findNavController().popBackStack()
+                    }
                 }
             } else {
                 val message = "MeMeow service not available. Try again later... code ${response.code()}"

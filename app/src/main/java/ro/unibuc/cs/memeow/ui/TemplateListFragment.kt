@@ -103,9 +103,7 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
                 return true
             }
 
-            override fun onQueryTextChange(newText: String?): Boolean {
-                return true
-            }
+            override fun onQueryTextChange(newText: String?) = true
         })
     }
 

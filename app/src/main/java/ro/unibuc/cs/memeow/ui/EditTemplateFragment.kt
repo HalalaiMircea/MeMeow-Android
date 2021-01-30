@@ -5,10 +5,9 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
@@ -36,9 +35,11 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
     @Inject lateinit var userRepository: ProfileRepository
 
     private lateinit var editTextWatcher: EditTextWatcher
+    private lateinit var publishDialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
 
         //https://developer.android.com/guide/navigation/navigation-conditional#kotlin
         val navController = findNavController()
@@ -98,15 +99,6 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
             .load(fullSizeImgUrl)
             .into(imgMeme)
 
-        binding.buttonRender.setOnClickListener {
-            val bitmap = Bitmap.createBitmap(container.width, container.height, Bitmap.Config.ARGB_8888)
-            val canvas = Canvas(bitmap)
-            container.layout(container.left, container.top, container.right, container.bottom)
-            container.draw(canvas)
-
-            editorViewModel.uploadMemeImage(bitmap)
-        }
-
         editorViewModel.newMemeLink.observe(viewLifecycleOwner, { memeObj: PostedMeme ->
             // Clear the previous liveData so that each time we select a new template on the same activity
             // instance we don't trigger this observer
@@ -114,6 +106,33 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
             val action = EditTemplateFragmentDirections.actionEditToViewMeme(memeObj)
             findNavController().navigate(action)
         })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.menu_editor, menu)
+
+        publishDialog = AlertDialog.Builder(requireContext())
+            .setTitle("Publish Confirmation")
+            .setMessage("You cannot edit the meme after publishing. Are you sure?")
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val container = binding.imgTextContainer
+                val bitmap = Bitmap.createBitmap(container.width, container.height, Bitmap.Config.ARGB_8888)
+                val canvas = Canvas(bitmap)
+                container.layout(container.left, container.top, container.right, container.bottom)
+                container.draw(canvas)
+                editorViewModel.uploadMemeImage(bitmap)
+            }
+            .setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.cancel() }
+            .create()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_publish) {
+            publishDialog.show()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onDestroyView() {
