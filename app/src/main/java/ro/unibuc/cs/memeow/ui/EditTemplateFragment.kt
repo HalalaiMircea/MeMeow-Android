@@ -24,15 +24,12 @@ import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentEditTemplateBinding
 import ro.unibuc.cs.memeow.injection.GlideApp
 import ro.unibuc.cs.memeow.model.PostedMeme
-import ro.unibuc.cs.memeow.model.ProfileRepository
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
     private var _binding: FragmentEditTemplateBinding? = null
     private val binding get() = _binding!!
-    private val editorViewModel: EditorViewModel by activityViewModels()
-    @Inject lateinit var userRepository: ProfileRepository
+    private val viewModel: EditorViewModel by activityViewModels()
 
     private lateinit var editTextWatcher: EditTextWatcher
     private lateinit var publishDialog: AlertDialog
@@ -59,12 +56,12 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentEditTemplateBinding.bind(view)
-        val fullSizeImgUrl = editorViewModel.currentTemplate.imageUrl
+        val fullSizeImgUrl = viewModel.currentTemplate.imageUrl
         val editTextBox = binding.editTextBox
         val imgMeme = binding.imgMeme
         val container = binding.imgTextContainer
         // If we get here from TemplateListFrag, we check if user's logged in
-        userRepository.signedUserProfile.observe(viewLifecycleOwner, { profile ->
+        viewModel.userRepository.signedUserProfile.observe(viewLifecycleOwner, { profile ->
             if (profile == null) {
                 findNavController().navigate(R.id.login_fragment)
             }
@@ -99,10 +96,10 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
             .load(fullSizeImgUrl)
             .into(imgMeme)
 
-        editorViewModel.newMemeLink.observe(viewLifecycleOwner, { memeObj: PostedMeme ->
+        viewModel.newMemeLink.observe(viewLifecycleOwner, { memeObj: PostedMeme ->
             // Clear the previous liveData so that each time we select a new template on the same activity
             // instance we don't trigger this observer
-            editorViewModel.newMemeLink = MutableLiveData()
+            viewModel.newMemeLink = MutableLiveData()
             val action = EditTemplateFragmentDirections.actionEditToViewMeme(memeObj)
             findNavController().navigate(action)
         })
@@ -121,7 +118,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                 val canvas = Canvas(bitmap)
                 container.layout(container.left, container.top, container.right, container.bottom)
                 container.draw(canvas)
-                editorViewModel.uploadMemeImage(bitmap)
+                viewModel.uploadMemeImage(bitmap)
             }
             .setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.cancel() }
             .create()

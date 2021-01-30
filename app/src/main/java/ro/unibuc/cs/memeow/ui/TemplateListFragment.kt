@@ -13,6 +13,7 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.LayoutGenericListBinding
@@ -124,16 +125,13 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val currentItem = getItem(position)
-            if (currentItem != null) {
-                holder.bind(currentItem)
-            }
+            if (currentItem != null) holder.bind(currentItem)
         }
 
-        override fun getItemViewType(position: Int): Int {
-            return if (position == itemCount) NETWORK_VIEW_TYPE else TEMPLATE_VIEW_TYPE
-        }
+        override fun getItemViewType(position: Int) =
+            if (position == itemCount) NETWORK_VIEW_TYPE else TEMPLATE_VIEW_TYPE
 
-        private class ViewHolder(
+        class ViewHolder(
             private val binding: LayoutTemplateItemBinding,
             private val viewModel: EditorViewModel
         ) : RecyclerView.ViewHolder(binding.root) {
@@ -142,17 +140,26 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
 
             init {
                 binding.root.setOnClickListener {
-                    viewModel.currentTemplate = template
-                    val action = TemplateListFragmentDirections.actionSelectTemplate()
-                    it.findNavController().navigate(action)
+                    // If user's not logged in
+                    if (viewModel.userCurrentLevel >= template.minRequiredLevel) {
+                        viewModel.currentTemplate = template
+                        val action = TemplateListFragmentDirections.actionSelectTemplate()
+                        it.findNavController().navigate(action)
+                    } else
+                        Snackbar.make(
+                            itemView,
+                            "You require at least level ${template.minRequiredLevel}",
+                            Snackbar.LENGTH_SHORT
+                        ).show()
                 }
             }
 
             fun bind(template: MemeTemplate) {
+                this.template = template
                 GlideApp.with(itemView)
                     .load(template.imageUrl).centerCrop().into(binding.templateImg)
                 binding.templateTitle.text = template.templateName
-                this.template = template
+                itemView.alpha = if (viewModel.userCurrentLevel < template.minRequiredLevel) 0.5f else 1f
             }
 
             override fun toString() = super.toString() + " '" + binding.templateTitle + "'"

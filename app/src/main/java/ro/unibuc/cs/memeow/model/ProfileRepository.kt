@@ -22,6 +22,9 @@ class ProfileRepository @Inject constructor(
     private val _signedUserProfile = MutableLiveData<Profile>()
     val signedUserProfile: LiveData<Profile> get() = _signedUserProfile
 
+    /*val isUserLoggedIn: Boolean
+        get() = signedUserProfile.value != null*/
+
     init {
         if (sharedPrefs.getString(API_KEY, null) != null)
             getUserProfile(null)

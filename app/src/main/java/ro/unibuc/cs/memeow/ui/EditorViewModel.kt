@@ -2,8 +2,10 @@ package ro.unibuc.cs.memeow.ui
 
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.lifecycle.*
-import androidx.paging.PagingData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.switchMap
+import androidx.lifecycle.viewModelScope
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import okhttp3.MediaType
@@ -15,6 +17,7 @@ import retrofit2.Response
 import ro.unibuc.cs.memeow.api.MemeowApi
 import ro.unibuc.cs.memeow.model.MemeTemplate
 import ro.unibuc.cs.memeow.model.PostedMeme
+import ro.unibuc.cs.memeow.model.ProfileRepository
 import ro.unibuc.cs.memeow.model.TemplateRepository
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
@@ -22,18 +25,19 @@ import javax.inject.Inject
 @HiltViewModel
 class EditorViewModel @Inject constructor(
     repository: TemplateRepository,
+    val userRepository: ProfileRepository,
     private val memeowApi: MemeowApi
 ) : ViewModel() {
 
     private val currentQuery = MutableLiveData<String?>(null)
 
-    val templates: LiveData<PagingData<MemeTemplate>> =
-        currentQuery.switchMap { queryString ->
-            repository.getTemplateResults(queryString).cachedIn(viewModelScope)
-        }
+    val templates = currentQuery.switchMap { repository.getTemplateResults(it).cachedIn(viewModelScope) }
 
     var newMemeLink = MutableLiveData<PostedMeme>()
     lateinit var currentTemplate: MemeTemplate
+
+    val userCurrentLevel: Int
+        get() = userRepository.signedUserProfile.value?.level?.currentLevel ?: 1
 
     fun searchTemplate(query: String) {
         currentQuery.value = query
@@ -56,7 +60,6 @@ class EditorViewModel @Inject constructor(
             }
 
             override fun onFailure(call: Call<PostedMeme>, t: Throwable) {
-                //newMemeLink.value = t.toString()
                 Log.e(TAG, t.toString())
             }
         })
