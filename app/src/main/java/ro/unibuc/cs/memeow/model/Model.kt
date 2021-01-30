@@ -45,3 +45,17 @@ data class Profile(
         val lastCurrentLevel: Int
     )
 }
+
+data class Ranking(
+    val leaderboardPlace: Int,
+    val userResponse: User
+) {
+    data class User(
+        val firstName: String,
+        val lastName: String,
+        val iconUrl: String,
+        val profileUuid: String
+    )
+}
+
+data class LeaderboardDTO(val entries: List<Ranking>)

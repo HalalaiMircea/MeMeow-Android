@@ -12,8 +12,8 @@
     <string name="create_meme">Create Meme</string>
     <string name="write_some_funny_text">Write some funny text…</string>
     <string name="retry">Retry</string>
-    <string name="failed_loading_images">Failed loading images</string>
-    <string name="meme_not_found">No template found for your query</string>
+    <string name="failed_loading_images">Failed loading content</string>
+    <string name="meme_not_found">No content found for your query</string>
 
     <string name="facebook_app_id">415198529620152</string>
     <string name="fb_login_protocol_scheme">fb415198529620152</string>
@@ -24,5 +24,7 @@
     <string name="level_d">Level %d</string>
     <string name="xp_dd">XP: %d/%d</string>
     <string name="featured_meme">Latest meme</string>
+    <string name="rank_d">Rank %d</string>
+    <string name="leaderboard">Leaderboard</string>
 
 </resources>

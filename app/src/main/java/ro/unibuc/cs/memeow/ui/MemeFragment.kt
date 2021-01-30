@@ -24,29 +24,29 @@ class MemeFragment : BaseFragment(R.layout.fragment_meme) {
     private val binding get() = _binding!!
     private val memeViewModel: MemeViewModel by viewModels()
 
-    private lateinit var hideHandler: Handler
     private lateinit var fullscreenContentControls: LinearLayout
+    private lateinit var hideHandler: Handler
 
     private val hidePart2Runnable = Runnable {
         // Delayed removal of status and navigation bar
-        val activity = requireActivity() as AppCompatActivity
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            activity.window.setDecorFitsSystemWindows(true)
-            activity.window.insetsController?.let {
-                it.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        activity?.run {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                window.setDecorFitsSystemWindows(true)
+                window.insetsController?.run {
+                    hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                    systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+                }
+            } else {
+                val flags = View.SYSTEM_UI_FLAG_LOW_PROFILE or
+                        View.SYSTEM_UI_FLAG_FULLSCREEN or
+                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                        View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
+                        View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
+                        View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                window.decorView.systemUiVisibility = flags
             }
-        } else {
-            val flags = View.SYSTEM_UI_FLAG_LOW_PROFILE or
-                    View.SYSTEM_UI_FLAG_FULLSCREEN or
-                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
-                    View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY or
-                    View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION or
-                    View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-            activity.window.decorView.systemUiVisibility = flags
+            (this as AppCompatActivity).supportActionBar?.hide()
         }
-        activity.supportActionBar!!.hide()
     }
     private var visible: Boolean = false
     private val hideRunnable = Runnable(this@MemeFragment::hide)
@@ -92,6 +92,7 @@ class MemeFragment : BaseFragment(R.layout.fragment_meme) {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        hideHandler.removeCallbacks(hideRunnable)
     }
 
     override fun onResume() {
@@ -135,9 +136,9 @@ class MemeFragment : BaseFragment(R.layout.fragment_meme) {
         // Show the system bar
         val activity = requireActivity() as AppCompatActivity
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            activity.window.insetsController?.let {
-                it.show(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
-                it.systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            activity.window.insetsController?.run {
+                show(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+                systemBarsBehavior = WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             }
         } else {
             binding.fullscreenContent.systemUiVisibility =
@@ -148,7 +149,7 @@ class MemeFragment : BaseFragment(R.layout.fragment_meme) {
         // Schedule a runnable to display UI elements after a delay
         hideHandler.removeCallbacks(hidePart2Runnable)
         hideHandler.postDelayed(showPart2Runnable, UI_ANIMATION_DELAY.toLong())
-        activity.supportActionBar!!.show()
+        activity.supportActionBar?.show()
     }
 
     /**
@@ -161,9 +162,7 @@ class MemeFragment : BaseFragment(R.layout.fragment_meme) {
     }
 
     companion object {
-        /**
-         * Whether or not the system UI should be auto-hidden after [AUTO_HIDE_DELAY_MILLIS] milliseconds.
-         */
+        /**Whether or not the system UI should be auto-hidden after [AUTO_HIDE_DELAY_MILLIS] milliseconds.*/
         private const val AUTO_HIDE = true
 
         /**

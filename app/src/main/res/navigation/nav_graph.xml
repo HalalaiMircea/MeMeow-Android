@@ -15,7 +15,7 @@
         android:id="@+id/nav_create_meme"
         android:name="ro.unibuc.cs.memeow.ui.TemplateListFragment"
         android:label="@string/create_meme"
-        tools:layout="@layout/fragment_template_list">
+        tools:layout="@layout/layout_generic_list">
         <action
             android:id="@+id/action_select_template"
             app:destination="@id/edit_template_fragment" />
@@ -57,5 +57,14 @@
         <action
             android:id="@+id/action_view_last_meme"
             app:destination="@id/meme_fragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_leaderboard"
+        android:name="ro.unibuc.cs.memeow.ui.LeaderboardFragment"
+        android:label="@string/leaderboard"
+        tools:layout="@layout/layout_generic_list">
+        <action
+            android:id="@+id/action_leaderboard_to_profile"
+            app:destination="@id/nav_profile" />
     </fragment>
 </navigation>

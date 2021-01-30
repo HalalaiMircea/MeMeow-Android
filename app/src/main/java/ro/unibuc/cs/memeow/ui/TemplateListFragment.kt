@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
-import ro.unibuc.cs.memeow.databinding.FragmentTemplateListBinding
+import ro.unibuc.cs.memeow.databinding.LayoutGenericListBinding
 import ro.unibuc.cs.memeow.databinding.LayoutTemplateItemBinding
 import ro.unibuc.cs.memeow.injection.GlideApp
 import ro.unibuc.cs.memeow.model.MemeTemplate
@@ -23,8 +23,8 @@ import ro.unibuc.cs.memeow.util.MarginItemDecoration
 import ro.unibuc.cs.memeow.util.MyLoadStateAdapter
 
 @AndroidEntryPoint
-class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
-    private var _binding: FragmentTemplateListBinding? = null
+class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
+    private var _binding: LayoutGenericListBinding? = null
     private val binding get() = _binding!!
     private val viewModel: EditorViewModel by activityViewModels()
 
@@ -34,7 +34,7 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        _binding = FragmentTemplateListBinding.bind(view)
+        _binding = LayoutGenericListBinding.bind(view)
 
         val adapter = RecyclerAdapter(viewModel)
 
@@ -52,9 +52,9 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
 
         // Show retry button and errors in recycler view layout
         adapter.addLoadStateListener { loadStates ->
-            binding.apply {
+            with(binding) {
                 progressBar.isVisible = loadStates.source.refresh is LoadState.Loading
-                this.templateList.isVisible = loadStates.source.refresh is LoadState.NotLoading
+                recyclerView.isVisible = loadStates.source.refresh is LoadState.NotLoading
                 buttonRetry.isVisible = loadStates.source.refresh is LoadState.Error
                 textViewError.isVisible = loadStates.source.refresh is LoadState.Error
 
@@ -63,20 +63,19 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
                     loadStates.append.endOfPaginationReached &&
                     adapter.itemCount < 1
                 ) {
-                    this.templateList.isVisible = false
+                    recyclerView.isVisible = false
                     textViewEmpty.isVisible = true
                 } else {
                     textViewEmpty.isVisible = false
                 }
             }
         }
-        with(binding.templateList) {
+        with(binding.recyclerView) {
             this.adapter = adapter.withLoadStateFooter(MyLoadStateAdapter { adapter.retry() })
             layoutManager = gridLayoutManager
             addItemDecoration(
                 MarginItemDecoration(
-                    resources.getDimensionPixelOffset(R.dimen.recycler_view_item_spacing),
-                    spanCount
+                    resources.getDimensionPixelOffset(R.dimen.recycler_view_item_spacing), spanCount
                 )
             )
             setHasFixedSize(true)
@@ -97,7 +96,7 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query != null) {
-                    binding.templateList.scrollToPosition(0)
+                    binding.recyclerView.scrollToPosition(0)
                     viewModel.searchTemplate(query)
                     searchView.clearFocus()
                 }
@@ -115,7 +114,7 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
         _binding = null
     }
 
-    class RecyclerAdapter(private val viewModel: EditorViewModel) :
+    private class RecyclerAdapter(private val viewModel: EditorViewModel) :
         PagingDataAdapter<MemeTemplate, RecyclerAdapter.ViewHolder>(DIFF_CALLBACK) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -136,7 +135,7 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
             return if (position == itemCount) NETWORK_VIEW_TYPE else TEMPLATE_VIEW_TYPE
         }
 
-        class ViewHolder(
+        private class ViewHolder(
             private val binding: LayoutTemplateItemBinding,
             private val viewModel: EditorViewModel
         ) : RecyclerView.ViewHolder(binding.root) {
@@ -153,9 +152,7 @@ class TemplateListFragment : Fragment(R.layout.fragment_template_list) {
 
             fun bind(template: MemeTemplate) {
                 GlideApp.with(itemView)
-                    .load(template.imageUrl)
-                    .centerCrop()
-                    .into(binding.templateImg)
+                    .load(template.imageUrl).centerCrop().into(binding.templateImg)
                 binding.templateTitle.text = template.templateName
                 this.template = template
             }

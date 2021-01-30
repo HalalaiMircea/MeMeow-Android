@@ -38,6 +38,9 @@ interface MemeowApi {
     @PUT("memes/{id}/like")
     fun likeMeme(@Path("id") id: String): Call<PostedMeme>
 
+    @GET("rankings/all")
+    fun getAllRankings(): Call<LeaderboardDTO>
+
     companion object {
         const val BASE_URL = "https://memeow-dev.herokuapp.com/api/"
 //        const val BASE_URL = "http://10.0.2.2:8080/api/"
