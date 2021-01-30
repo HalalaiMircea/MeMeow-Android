@@ -26,5 +26,6 @@
     <string name="featured_meme">Latest meme</string>
     <string name="rank_d">Rank %d</string>
     <string name="leaderboard">Leaderboard</string>
+    <string name="leaderboard_top_1">Leaderboard Top #1</string>
 
 </resources>

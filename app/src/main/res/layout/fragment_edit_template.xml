@@ -32,8 +32,8 @@
             android:id="@+id/img_meme"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:src="@tools:sample/avatars"
-            tools:ignore="ContentDescription" />
+            tools:ignore="ContentDescription"
+            tools:src="@tools:sample/backgrounds/scenic[5]" />
     </FrameLayout>
 
     <Button

@@ -8,11 +8,8 @@ import ro.unibuc.cs.memeow.model.RankingRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class LeaderboardViewModel @Inject constructor(
-    repository: RankingRepository
-) : ViewModel() {
+class LeaderboardViewModel @Inject constructor(repository: RankingRepository) : ViewModel() {
 
     val rankings: LiveData<List<Ranking>> = repository.getRankingList()
-
 
 }

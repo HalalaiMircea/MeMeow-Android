@@ -1,13 +1,15 @@
 package ro.unibuc.cs.memeow.ui.home
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import ro.unibuc.cs.memeow.model.Ranking
+import ro.unibuc.cs.memeow.model.RankingRepository
+import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+@HiltViewModel
+class HomeViewModel @Inject constructor(repository: RankingRepository) : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
-    }
-    val text: LiveData<String> = _text
+    val topRanking: LiveData<Ranking> = repository.getTopRanking()
+
 }

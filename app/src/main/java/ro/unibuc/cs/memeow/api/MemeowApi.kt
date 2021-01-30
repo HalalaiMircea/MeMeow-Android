@@ -41,6 +41,9 @@ interface MemeowApi {
     @GET("rankings/all")
     fun getAllRankings(): Call<LeaderboardDTO>
 
+    @GET("rankings/{placement}")
+    fun getRanking(@Path("placement") placement: Int): Call<Ranking>
+
     companion object {
         const val BASE_URL = "https://memeow-dev.herokuapp.com/api/"
 //        const val BASE_URL = "http://10.0.2.2:8080/api/"

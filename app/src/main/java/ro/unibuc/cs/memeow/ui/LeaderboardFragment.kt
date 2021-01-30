@@ -37,9 +37,7 @@ class LeaderboardFragment : Fragment(R.layout.layout_generic_list) {
             this.adapter = adapter
             layoutManager = LinearLayoutManager(context)
             addItemDecoration(
-                MarginItemDecoration(
-                    resources.getDimensionPixelOffset(R.dimen.recycler_view_item_spacing), 1
-                )
+                MarginItemDecoration(resources.getDimensionPixelOffset(R.dimen.recycler_view_item_spacing), 1)
             )
             setHasFixedSize(true)
         }
@@ -68,20 +66,20 @@ class LeaderboardFragment : Fragment(R.layout.layout_generic_list) {
             val item = getItem(position)
             if (item != null) {
                 holder.bind(item)
-                holder.profileUuid = item.userResponse.profileUuid
             }
         }
 
-        private inner class ViewHolder(val binding: LayoutLeaderboardItemBinding) :
+        inner class ViewHolder(val binding: LayoutLeaderboardItemBinding) :
             RecyclerView.ViewHolder(binding.root) {
 
-            lateinit var profileUuid: String
+            private lateinit var profileUuid: String
 
             init {
                 binding.imageProfile.setOnClickListener { itemClick(profileUuid) }
             }
 
             fun bind(item: Ranking) {
+                profileUuid = item.userResponse.profileUuid
                 val fullName = item.userResponse.firstName + " " + item.userResponse.lastName
                 binding.textFullName.text = fullName
                 binding.textRank.text = binding.root.context.getString(R.string.rank_d, item.leaderboardPlace)

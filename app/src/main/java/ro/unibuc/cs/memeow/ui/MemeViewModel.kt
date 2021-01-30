@@ -42,6 +42,6 @@ class MemeViewModel @Inject constructor(
     }
 
     companion object {
-        private const val TAG = "ViewMemeViewModel"
+        private const val TAG = "MemeViewModel"
     }
 }

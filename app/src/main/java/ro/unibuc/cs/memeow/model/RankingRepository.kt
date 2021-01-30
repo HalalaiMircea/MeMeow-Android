@@ -31,6 +31,24 @@ class RankingRepository @Inject constructor(private val memeowApi: MemeowApi) {
         return result
     }
 
+    fun getTopRanking(): LiveData<Ranking> {
+        val result = MutableLiveData<Ranking>()
+
+        memeowApi.getRanking(1).enqueue(object : Callback<Ranking> {
+            override fun onResponse(call: Call<Ranking>, response: Response<Ranking>) {
+                if (response.isSuccessful)
+                    result.value = response.body()
+                else
+                    Log.d(TAG, "onResponse: ${response.message() + response.code()}")
+            }
+
+            override fun onFailure(call: Call<Ranking>, t: Throwable) {
+                Log.e(TAG, "onFailure: $t")
+            }
+        })
+        return result
+    }
+
     companion object {
         private const val TAG = "RankingRepository"
     }
