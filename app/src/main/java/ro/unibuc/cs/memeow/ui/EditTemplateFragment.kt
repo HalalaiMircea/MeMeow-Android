@@ -12,8 +12,6 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -23,7 +21,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentEditTemplateBinding
 import ro.unibuc.cs.memeow.injection.GlideApp
-import ro.unibuc.cs.memeow.model.PostedMeme
 
 @AndroidEntryPoint
 class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
@@ -44,30 +41,15 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         val savedStateHandle = currentBackStackEntry.savedStateHandle
         savedStateHandle.getLiveData<Boolean>(LoginFragment.LOGIN_SUCCESSFUL)
             .observe(currentBackStackEntry, { success ->
-                if (!success) {
-                    val startDestination = R.id.nav_create_meme
-                    val navOptions = NavOptions.Builder()
-                        .setPopUpTo(startDestination, true)
-                        .build()
-                    navController.navigate(startDestination, null, navOptions)
-                }
+                if (!success)
+                    navController.popBackStack()
             })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentEditTemplateBinding.bind(view)
-        val fullSizeImgUrl = viewModel.currentTemplate.imageUrl
-        val editTextBox = binding.editTextBox
-        val imgMeme = binding.imgMeme
-        val container = binding.imgTextContainer
-        // If we get here from TemplateListFrag, we check if user's logged in
-        viewModel.userRepository.signedUserProfile.observe(viewLifecycleOwner, { profile ->
-            if (profile == null) {
-                findNavController().navigate(R.id.login_fragment)
-            }
-        })
         editTextWatcher = EditTextWatcher(null)
-        editTextBox.addTextChangedListener(editTextWatcher)
+        binding.editTextBox.addTextChangedListener(editTextWatcher)
 
         // Load the currently selected template from the view model
         GlideApp.with(this)
@@ -81,6 +63,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                     resource: Bitmap?, model: Any?, target: Target<Bitmap>?, dataSource: DataSource?,
                     isFirstResource: Boolean
                 ): Boolean {
+                    val container = binding.imgTextContainer
                     // We do this once the image loaded successfully because we need its dimensions
                     // Call onPreDraw in order to get runtime measurements of views, else they are zero
                     container.doOnPreDraw {
@@ -93,16 +76,8 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                     return false
                 }
             })
-            .load(fullSizeImgUrl)
-            .into(imgMeme)
-
-        viewModel.newMemeLink.observe(viewLifecycleOwner, { memeObj: PostedMeme ->
-            // Clear the previous liveData so that each time we select a new template on the same activity
-            // instance we don't trigger this observer
-            viewModel.newMemeLink = MutableLiveData()
-            val action = EditTemplateFragmentDirections.actionEditToViewMeme(memeObj)
-            findNavController().navigate(action)
-        })
+            .load(viewModel.currentTemplate.imageUrl)
+            .into(binding.imgMeme)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -118,7 +93,10 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                 val canvas = Canvas(bitmap)
                 container.layout(container.left, container.top, container.right, container.bottom)
                 container.draw(canvas)
-                viewModel.uploadMemeImage(bitmap)
+                viewModel.uploadMemeImage(bitmap).observe(viewLifecycleOwner) {
+                    val action = EditTemplateFragmentDirections.actionEditToViewMeme(it)
+                    findNavController().navigate(action)
+                }
             }
             .setNegativeButton(android.R.string.cancel) { dialog, _ -> dialog.cancel() }
             .create()
@@ -126,7 +104,11 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_publish) {
-            publishDialog.show()
+            if (viewModel.userRepository.isUserLoggedIn)
+                publishDialog.show()
+            else
+                findNavController().navigate(R.id.login_fragment)
+
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -176,7 +158,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         }
     }
 
-    class EditTextWatcher(var target: TextView?) : TextWatcher {
+    private class EditTextWatcher(var target: TextView?) : TextWatcher {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -186,7 +168,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         override fun afterTextChanged(s: Editable?) {}
     }
 
-    class CustomTouchListener(
+    private class CustomTouchListener(
         private val screenWidth: Int, private val screenHeight: Int
     ) : View.OnTouchListener {
         private var dX: Float = 0f

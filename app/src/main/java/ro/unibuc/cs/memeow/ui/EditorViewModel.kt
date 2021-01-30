@@ -2,10 +2,7 @@ package ro.unibuc.cs.memeow.ui
 
 import android.graphics.Bitmap
 import android.util.Log
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.paging.cachedIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import okhttp3.MediaType
@@ -33,7 +30,6 @@ class EditorViewModel @Inject constructor(
 
     val templates = currentQuery.switchMap { repository.getTemplateResults(it).cachedIn(viewModelScope) }
 
-    var newMemeLink = MutableLiveData<PostedMeme>()
     lateinit var currentTemplate: MemeTemplate
 
     val userCurrentLevel: Int
@@ -43,7 +39,7 @@ class EditorViewModel @Inject constructor(
         currentQuery.value = query
     }
 
-    fun uploadMemeImage(bitmap: Bitmap) {
+    fun uploadMemeImage(bitmap: Bitmap): LiveData<PostedMeme> {
         val stream = ByteArrayOutputStream()
         bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
 
@@ -51,18 +47,20 @@ class EditorViewModel @Inject constructor(
             "file", "", RequestBody.create(MediaType.parse("image/png"), stream.toByteArray())
         )
         val templateId = currentTemplate.templateName
+        val result = MutableLiveData<PostedMeme>()
         memeowApi.uploadMeme(image, templateId).enqueue(object : Callback<PostedMeme> {
             override fun onResponse(call: Call<PostedMeme>, response: Response<PostedMeme>) {
                 if (response.isSuccessful)
-                    newMemeLink.value = response.body()
+                    result.value = response.body()
                 else
                     Log.e(TAG, response.message() + response.code())
             }
 
             override fun onFailure(call: Call<PostedMeme>, t: Throwable) {
-                Log.e(TAG, t.toString())
+                Log.e(TAG, "onFailure: $t")
             }
         })
+        return result
     }
 
     companion object {
