@@ -13,7 +13,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import ro.unibuc.cs.memeow.api.MemeowApi
-import ro.unibuc.cs.memeow.model.API_KEY
+import ro.unibuc.cs.memeow.model.repo.JTW_TOKEN
 import javax.inject.Singleton
 
 @Module
@@ -35,7 +35,7 @@ object AppModule {
                 var requestBuilder = originalRequest.newBuilder()
 
                 // Executes the block only if the receiver of ?.let is nonNull
-                sharedPrefs.getString(API_KEY, null)?.let {
+                sharedPrefs.getString(JTW_TOKEN, null)?.let {
                     requestBuilder = requestBuilder.header("Authorization", it)
                 }
 

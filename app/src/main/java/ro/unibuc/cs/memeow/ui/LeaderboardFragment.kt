@@ -42,10 +42,10 @@ class LeaderboardFragment : Fragment(R.layout.layout_generic_list) {
             setHasFixedSize(true)
         }
         binding.progressBar.isVisible = true
-        viewModel.rankings.observe(viewLifecycleOwner, {
+        viewModel.rankings.observe(viewLifecycleOwner) {
             binding.progressBar.isVisible = false
             adapter.submitList(it)
-        })
+        }
     }
 
     override fun onDestroyView() {
@@ -75,7 +75,7 @@ class LeaderboardFragment : Fragment(R.layout.layout_generic_list) {
             private lateinit var profileUuid: String
 
             init {
-                binding.imageProfile.setOnClickListener { itemClick(profileUuid) }
+                binding.root.setOnClickListener { itemClick(profileUuid) }
             }
 
             fun bind(item: Ranking) {

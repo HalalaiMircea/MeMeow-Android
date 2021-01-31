@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import ro.unibuc.cs.memeow.model.Profile
-import ro.unibuc.cs.memeow.model.ProfileRepository
+import ro.unibuc.cs.memeow.model.repo.ProfileRepository
 import ro.unibuc.cs.memeow.util.ArgsViewModel
 import javax.inject.Inject
 

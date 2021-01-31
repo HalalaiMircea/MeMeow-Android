@@ -28,8 +28,22 @@ interface MemeowApi {
     @GET("profile/{id}")
     fun getUserProfile(@Path("id") uuid: String): Call<Profile>
 
+    @GET("profile/{id}/memehistory")
+    suspend fun getUserMemeHistory(
+        @Path("id") uuid: String,
+        @Query("pageNumber") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): List<PostedMeme>
+
     @POST("authenticate/facebook")
     fun facebookAuth(@Body body: FacebookAuthUser): Call<ServerAuthResponse>
+
+    @GET("memes/template/{name}")
+    suspend fun getMemesByTemplate(
+        @Path("name") templateName: String,
+        @Query("pageNumber") page: Int,
+        @Query("pageSize") pageSize: Int
+    ): List<PostedMeme>
 
     @Multipart
     @POST("memes/create")

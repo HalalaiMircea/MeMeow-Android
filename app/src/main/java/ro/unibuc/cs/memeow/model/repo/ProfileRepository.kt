@@ -1,4 +1,4 @@
-package ro.unibuc.cs.memeow.model
+package ro.unibuc.cs.memeow.model.repo
 
 import android.content.SharedPreferences
 import android.util.Log
@@ -8,10 +8,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import ro.unibuc.cs.memeow.api.MemeowApi
+import ro.unibuc.cs.memeow.model.Profile
 import javax.inject.Inject
 import javax.inject.Singleton
 
-const val API_KEY = "apiKey"
+const val JTW_TOKEN = "jwt_token"
 
 @Singleton
 class ProfileRepository @Inject constructor(
@@ -26,7 +27,7 @@ class ProfileRepository @Inject constructor(
         get() = signedUserProfile.value != null
 
     init {
-        if (sharedPrefs.getString(API_KEY, null) != null)
+        if (sharedPrefs.getString(JTW_TOKEN, null) != null)
             getUserProfile(null)
         else
             _signedUserProfile.value = null
@@ -50,7 +51,7 @@ class ProfileRepository @Inject constructor(
      */
     fun signInUser(token: String) {
         sharedPrefs.edit()
-            .putString(API_KEY, token)
+            .putString(JTW_TOKEN, token)
             .apply()
         getUserProfile(null)
     }
@@ -60,7 +61,7 @@ class ProfileRepository @Inject constructor(
      */
     fun signOutUser() {
         sharedPrefs.edit()
-            .remove(API_KEY)
+            .remove(JTW_TOKEN)
             .apply()
         _signedUserProfile.value = null
     }

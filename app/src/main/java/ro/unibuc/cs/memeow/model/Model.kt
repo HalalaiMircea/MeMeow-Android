@@ -15,9 +15,7 @@ data class MemeTemplate(
     val imageUrl: String
 )
 
-data class ServerAuthResponse(
-    val jwtToken: String
-)
+data class ServerAuthResponse(val jwtToken: String)
 
 @Parcelize
 data class PostedMeme(

@@ -18,8 +18,8 @@ import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.api.MemeowApi
 import ro.unibuc.cs.memeow.databinding.FragmentLoginBinding
 import ro.unibuc.cs.memeow.model.FacebookAuthUser
-import ro.unibuc.cs.memeow.model.ProfileRepository
 import ro.unibuc.cs.memeow.model.ServerAuthResponse
+import ro.unibuc.cs.memeow.model.repo.ProfileRepository
 import javax.inject.Inject
 
 @AndroidEntryPoint

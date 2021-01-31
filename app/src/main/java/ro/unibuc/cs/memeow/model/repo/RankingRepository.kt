@@ -1,4 +1,4 @@
-package ro.unibuc.cs.memeow.model
+package ro.unibuc.cs.memeow.model.repo
 
 import android.util.Log
 import androidx.lifecycle.LiveData
@@ -7,6 +7,8 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import ro.unibuc.cs.memeow.api.MemeowApi
+import ro.unibuc.cs.memeow.model.LeaderboardDTO
+import ro.unibuc.cs.memeow.model.Ranking
 import javax.inject.Inject
 import javax.inject.Singleton
 

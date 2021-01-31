@@ -1,13 +1,12 @@
-package ro.unibuc.cs.memeow.model
+package ro.unibuc.cs.memeow.model.source
 
 import androidx.paging.PagingSource
 import retrofit2.HttpException
 import ro.unibuc.cs.memeow.api.MemeowApi
+import ro.unibuc.cs.memeow.model.MemeTemplate
 import java.io.IOException
 
-private const val MEMEOW_STARTING_PAGE_INDEX = 0
-
-class MemeowPagingSource(
+class TemplatePagingSource(
     private val memeowApi: MemeowApi,
     private val searchQuery: String?
 ) : PagingSource<Int, MemeTemplate>() {

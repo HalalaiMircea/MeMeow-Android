@@ -78,7 +78,7 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
             GlideApp.with(this)
                 .load(lastMeme.memeUrl).centerCrop().into(binding.imageLastMeme)
             binding.textLastMemeDate.text = DateFormat.getDateInstance().format(lastMeme.dateTimeUtc)
-            binding.imageLastMeme.setOnClickListener {
+            binding.lastMemeView.setOnClickListener {
                 val action = ProfileFragmentDirections.actionViewLastMeme(lastMeme)
                 findNavController().navigate(action)
             }

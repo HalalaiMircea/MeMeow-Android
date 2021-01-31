@@ -9,22 +9,24 @@ import androidx.recyclerview.widget.RecyclerView
 import ro.unibuc.cs.memeow.databinding.ListLoadStateFooterBinding
 
 class MyLoadStateAdapter(private val retry: () -> Unit) :
-    LoadStateAdapter<MyLoadStateAdapter.LoadStateViewHolder>() {
+    LoadStateAdapter<MyLoadStateAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): LoadStateViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, loadState: LoadState): ViewHolder {
         val binding = ListLoadStateFooterBinding.inflate(
             LayoutInflater.from(parent.context), parent, false
         )
 
-        return LoadStateViewHolder(binding)
+        return ViewHolder(binding, retry)
     }
 
-    override fun onBindViewHolder(holder: LoadStateViewHolder, loadState: LoadState) {
+    override fun onBindViewHolder(holder: ViewHolder, loadState: LoadState) {
         holder.bind(loadState)
     }
 
-    inner class LoadStateViewHolder(private val binding: ListLoadStateFooterBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class ViewHolder(
+        private val binding: ListLoadStateFooterBinding,
+        private val retry: () -> Unit
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         init {
             binding.buttonRetry.setOnClickListener { retry.invoke() }
@@ -36,6 +38,10 @@ class MyLoadStateAdapter(private val retry: () -> Unit) :
                 buttonRetry.isVisible = loadState !is LoadState.Loading
                 textError.isVisible = loadState !is LoadState.Loading
             }
+        }
+
+        companion object {
+            const val TYPE: Int = 1337
         }
     }
 }

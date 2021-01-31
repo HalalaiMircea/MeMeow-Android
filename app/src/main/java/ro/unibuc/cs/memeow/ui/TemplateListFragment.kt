@@ -37,18 +37,16 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = LayoutGenericListBinding.bind(view)
 
+        val spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
+            SPAN_COUNT_LANDSCAPE else SPAN_COUNT_PORTRAIT
+
         val adapter = RecyclerAdapter(viewModel)
 
-        val spanCount =
-            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
-                SPAN_COUNT_LANDSCAPE
-            else
-                SPAN_COUNT_PORTRAIT
         // Configure footer to span across multiple columns
         val gridLayoutManager = GridLayoutManager(context, spanCount)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int =
-                if (adapter.getItemViewType(position) == RecyclerAdapter.TEMPLATE_VIEW_TYPE) 1 else spanCount
+                if (adapter.getItemViewType(position) == RecyclerAdapter.ViewHolder.TYPE) 1 else spanCount
         }
 
         // Show retry button and errors in recycler view layout
@@ -71,6 +69,7 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
                 }
             }
         }
+        // Finish recyclerView setup
         with(binding.recyclerView) {
             this.adapter = adapter.withLoadStateFooter(MyLoadStateAdapter { adapter.retry() })
             layoutManager = gridLayoutManager
@@ -129,7 +128,7 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
         }
 
         override fun getItemViewType(position: Int) =
-            if (position == itemCount) NETWORK_VIEW_TYPE else TEMPLATE_VIEW_TYPE
+            if (position == itemCount) MyLoadStateAdapter.ViewHolder.TYPE else ViewHolder.TYPE
 
         class ViewHolder(
             private val binding: LayoutTemplateItemBinding,
@@ -163,6 +162,10 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
             }
 
             override fun toString() = super.toString() + " '" + binding.templateTitle + "'"
+
+            companion object {
+                const val TYPE: Int = 69
+            }
         }
 
         companion object {
@@ -173,8 +176,6 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
                 override fun areContentsTheSame(oldItem: MemeTemplate, newItem: MemeTemplate) =
                     oldItem == newItem
             }
-            const val NETWORK_VIEW_TYPE = 1337
-            const val TEMPLATE_VIEW_TYPE = 69
         }
     }
 

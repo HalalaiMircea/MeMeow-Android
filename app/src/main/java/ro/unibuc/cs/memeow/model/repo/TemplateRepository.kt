@@ -1,9 +1,10 @@
-package ro.unibuc.cs.memeow.model
+package ro.unibuc.cs.memeow.model.repo
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.liveData
 import ro.unibuc.cs.memeow.api.MemeowApi
+import ro.unibuc.cs.memeow.model.source.TemplatePagingSource
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,6 +19,6 @@ class TemplateRepository @Inject constructor(private val memeowApi: MemeowApi) {
                 maxSize = 60,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { MemeowPagingSource(memeowApi, search) }
+            pagingSourceFactory = { TemplatePagingSource(memeowApi, search) }
         ).liveData
 }

@@ -104,11 +104,11 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_publish) {
-            if (viewModel.userRepository.isUserLoggedIn)
+            if (viewModel.userRepository.isUserLoggedIn) {
                 publishDialog.show()
-            else
+            } else {
                 findNavController().navigate(R.id.login_fragment)
-
+            }
             return true
         }
         return super.onOptionsItemSelected(item)
@@ -162,7 +162,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            target?.text = s
+            target?.text = s.toString()
         }
 
         override fun afterTextChanged(s: Editable?) {}
@@ -190,8 +190,8 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                 MotionEvent.ACTION_MOVE -> {
                     newX = event.rawX + dX; newY = event.rawY + dY
 
-                    if ((newX <= 0 || newX >= screenWidth - view.width)
-                        && (newY <= 0 || newY >= screenHeight - view.height)
+                    if ((newX <= 0 || newX >= screenWidth - view.width) &&
+                        (newY <= 0 || newY >= screenHeight - view.height)
                     ) {
                         return true
                     }

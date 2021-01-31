@@ -14,8 +14,8 @@ import retrofit2.Response
 import ro.unibuc.cs.memeow.api.MemeowApi
 import ro.unibuc.cs.memeow.model.MemeTemplate
 import ro.unibuc.cs.memeow.model.PostedMeme
-import ro.unibuc.cs.memeow.model.ProfileRepository
-import ro.unibuc.cs.memeow.model.TemplateRepository
+import ro.unibuc.cs.memeow.model.repo.ProfileRepository
+import ro.unibuc.cs.memeow.model.repo.TemplateRepository
 import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
