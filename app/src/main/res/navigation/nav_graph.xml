@@ -18,7 +18,11 @@
         tools:layout="@layout/layout_generic_list">
         <action
             android:id="@+id/action_select_template"
-            app:destination="@id/edit_template_fragment" />
+            app:destination="@id/edit_template_fragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
     </fragment>
     <fragment
         android:id="@+id/edit_template_fragment"
@@ -28,6 +32,10 @@
         <action
             android:id="@+id/action_edit_to_viewMeme"
             app:destination="@id/meme_fragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out"
             app:popUpTo="@id/nav_home" />
     </fragment>
     <fragment
@@ -56,10 +64,18 @@
             app:nullable="true" />
         <action
             android:id="@+id/action_view_last_meme"
-            app:destination="@id/meme_fragment" />
+            app:destination="@id/meme_fragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
         <action
             android:id="@+id/action_profile_to_meme_history"
-            app:destination="@id/meme_history_fragment" />
+            app:destination="@id/meme_history_fragment"
+            app:enterAnim="@anim/fragment_open_enter"
+            app:exitAnim="@anim/fragment_open_exit"
+            app:popEnterAnim="@anim/fragment_close_enter"
+            app:popExitAnim="@anim/fragment_close_exit" />
     </fragment>
     <fragment
         android:id="@+id/nav_leaderboard"
@@ -68,18 +84,34 @@
         tools:layout="@layout/layout_generic_list">
         <action
             android:id="@+id/action_leaderboard_to_profile"
-            app:destination="@id/nav_profile" />
+            app:destination="@id/nav_profile"
+            app:enterAnim="@android:anim/slide_in_left"
+            app:exitAnim="@android:anim/slide_out_right"
+            app:popEnterAnim="@android:anim/slide_in_left"
+            app:popExitAnim="@android:anim/slide_out_right" />
     </fragment>
     <fragment
         android:id="@+id/meme_history_fragment"
         android:name="ro.unibuc.cs.memeow.ui.MemeHistoryFragment"
-        android:label="MemeHistoryFragment"
+        android:label="{username}'s History"
         tools:layout="@layout/layout_generic_list">
         <argument
             android:name="profileUUID"
             app:argType="string" />
         <action
             android:id="@+id/action_meme_history_view_meme"
-            app:destination="@id/meme_fragment" />
+            app:destination="@id/meme_fragment"
+            app:enterAnim="@android:anim/fade_in"
+            app:exitAnim="@android:anim/fade_out"
+            app:popEnterAnim="@android:anim/fade_in"
+            app:popExitAnim="@android:anim/fade_out" />
+        <argument
+            android:name="username"
+            app:argType="string" />
     </fragment>
+    <action
+        android:id="@+id/action_global_login"
+        app:destination="@id/login_fragment"
+        app:enterAnim="@android:anim/slide_in_left"
+        app:popExitAnim="@android:anim/slide_out_right" />
 </navigation>

@@ -1,10 +1,7 @@
 package ro.unibuc.cs.memeow
 
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
@@ -16,14 +13,12 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import dagger.hilt.android.AndroidEntryPoint
-import ro.unibuc.cs.memeow.model.repo.JTW_TOKEN
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
-    @Inject lateinit var sharedPrefs: SharedPreferences
+//    @Inject lateinit var sharedPrefs: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,13 +45,13 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-        if (BuildConfig.DEBUG) {
+        /*if (BuildConfig.DEBUG) {
             if (sharedPrefs.getString(JTW_TOKEN, null) == null) {
                 val message = "Not logged in! (Missing JWT token)"
                 Log.e(TAG, message)
                 Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
             }
-        }
+        }*/
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

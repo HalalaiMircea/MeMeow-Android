@@ -94,17 +94,21 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
         val searchItem = menu.findItem(R.id.action_search)
         val searchView = searchItem.actionView as SearchView
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                if (query != null) {
-                    binding.recyclerView.scrollToPosition(0)
-                    viewModel.searchTemplate(query)
-                    searchView.clearFocus()
-                }
+            override fun onQueryTextSubmit(query: String): Boolean {
+                binding.recyclerView.scrollToPosition(0)
+                viewModel.searchTemplate(query)
+                searchView.clearFocus()
                 return true
             }
 
             override fun onQueryTextChange(newText: String?) = true
         })
+        // Hacky way to reset the query, but the API didn't give me any choice
+        searchView.findViewById<View>(R.id.search_close_btn)
+            .setOnClickListener {
+                viewModel.searchTemplate("")
+                searchView.setQuery("", false)
+            }
     }
 
     override fun onDestroyView() {
@@ -182,5 +186,6 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
     companion object {
         private const val SPAN_COUNT_PORTRAIT = 2
         private const val SPAN_COUNT_LANDSCAPE = 4
+        private const val TAG = "TemplateListFragment"
     }
 }

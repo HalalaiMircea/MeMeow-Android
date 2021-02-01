@@ -12,13 +12,16 @@ import javax.inject.Singleton
 class TemplateRepository @Inject constructor(private val memeowApi: MemeowApi) {
 
     // maxSize >= pageSize + 2*prefetchDist
-    fun getTemplateResults(search: String?) =
+    fun getTemplateResults(search: String) =
         Pager(
             config = PagingConfig(
                 pageSize = 20,
                 maxSize = 60,
                 enablePlaceholders = false
             ),
-            pagingSourceFactory = { TemplatePagingSource(memeowApi, search) }
+            pagingSourceFactory = {
+                val searchQuery = if (search.isEmpty()) null else search
+                TemplatePagingSource(memeowApi, searchQuery)
+            }
         ).liveData
 }

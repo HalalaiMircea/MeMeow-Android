@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
@@ -24,28 +23,25 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        //https://developer.android.com/guide/navigation/navigation-conditional#kotlin
         val navController = findNavController()
         val currentBackStackEntry = navController.currentBackStackEntry!!
         val savedStateHandle = currentBackStackEntry.savedStateHandle
         savedStateHandle.getLiveData<Boolean>(LoginFragment.LOGIN_SUCCESSFUL)
             .observe(currentBackStackEntry, { success ->
                 if (!success) {
-                    val startDestination = navController.graph.startDestination
-                    val navOptions = NavOptions.Builder()
-                        .setPopUpTo(startDestination, true)
-                        .build()
-                    navController.navigate(startDestination, null, navOptions)
+                    navController.popBackStack()
                 }
             })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentProfileBinding.bind(view)
+
         // Redirect to login when user isn't logged in, even if it's not his profile
         viewModel.repository.signedUserProfile.observe(viewLifecycleOwner, { ownProfile ->
             if (ownProfile == null) {
-                findNavController().navigate(R.id.login_fragment)
+                val action = ProfileFragmentDirections.actionGlobalLogin()
+                findNavController().navigate(action)
             } else {
                 binding.lastMemeView.isVisible = false
                 viewModel.profile.observe(viewLifecycleOwner, this::onLoggedIn)
@@ -72,19 +68,22 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
             .setDuration(600)
             .start()
 
-        // Last meme view related stuff
-        profile.lastMeme?.let { lastMeme ->
+        // We show and set the data only if user has a last meme
+        profile.lastMeme?.let { memeObj ->
             binding.lastMemeView.isVisible = true
             GlideApp.with(this)
-                .load(lastMeme.memeUrl).centerCrop().into(binding.imageLastMeme)
-            binding.textLastMemeDate.text = DateFormat.getDateInstance().format(lastMeme.dateTimeUtc)
+                .load(memeObj.memeUrl).centerCrop().into(binding.imageLastMeme)
+            binding.textLastMemeDate.text = DateFormat.getDateInstance().format(memeObj.dateTimeUtc)
             binding.lastMemeView.setOnClickListener {
-                val action = ProfileFragmentDirections.actionViewLastMeme(lastMeme)
+                val action = ProfileFragmentDirections.actionViewLastMeme(memeObj)
                 findNavController().navigate(action)
             }
         }
         binding.buttonHistory.setOnClickListener {
-            val action = ProfileFragmentDirections.actionProfileToMemeHistory(profile.profileUuid)
+            val action = ProfileFragmentDirections.actionProfileToMemeHistory(
+                profileUUID = profile.profileUuid,
+                username = profile.firstName
+            )
             findNavController().navigate(action)
         }
     }

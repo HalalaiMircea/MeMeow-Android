@@ -26,7 +26,7 @@ class EditorViewModel @Inject constructor(
     private val memeowApi: MemeowApi
 ) : ViewModel() {
 
-    private val currentQuery = MutableLiveData<String?>(null)
+    private val currentQuery = MutableLiveData(DEFAULT_QUERY)
 
     val templates = currentQuery.switchMap { repository.getTemplateResults(it).cachedIn(viewModelScope) }
 
@@ -64,6 +64,7 @@ class EditorViewModel @Inject constructor(
     }
 
     companion object {
+        private const val DEFAULT_QUERY = ""
         private const val TAG = "EditorViewModel"
     }
 }

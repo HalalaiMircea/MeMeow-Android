@@ -35,15 +35,12 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
 
-        //https://developer.android.com/guide/navigation/navigation-conditional#kotlin
-        val navController = findNavController()
+        /*val navController = findNavController()
         val currentBackStackEntry = navController.currentBackStackEntry!!
         val savedStateHandle = currentBackStackEntry.savedStateHandle
         savedStateHandle.getLiveData<Boolean>(LoginFragment.LOGIN_SUCCESSFUL)
-            .observe(currentBackStackEntry, { success ->
-                if (!success)
-                    navController.popBackStack()
-            })
+            .observe(currentBackStackEntry, {
+            })*/
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -107,7 +104,8 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
             if (viewModel.userRepository.isUserLoggedIn) {
                 publishDialog.show()
             } else {
-                findNavController().navigate(R.id.login_fragment)
+                val action = EditTemplateFragmentDirections.actionGlobalLogin()
+                findNavController().navigate(action)
             }
             return true
         }

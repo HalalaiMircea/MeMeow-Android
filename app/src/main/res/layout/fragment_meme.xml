@@ -31,15 +31,19 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|center_horizontal"
             android:orientation="horizontal"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
             tools:ignore="UselessParent">
 
             <Button
                 android:id="@+id/like_button"
                 style="?android:attr/buttonBarButtonStyle"
-                android:layout_width="0dp"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:textAlignment="center"
+                android:textColor="@color/white"
                 app:icon="@drawable/ic_baseline_thumb_up_24"
+                app:iconTint="@color/white"
                 tools:text="#Likes" />
 
         </LinearLayout>

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
+    android:background="@color/app_background"
     tools:context=".ui.EditTemplateFragment">
 
     <EditText
@@ -13,7 +14,7 @@
         android:layout_height="wrap_content"
         android:autofillHints="no"
         android:hint="@string/write_some_funny_text"
-        android:inputType="text"
+        android:inputType="textMultiLine|text"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

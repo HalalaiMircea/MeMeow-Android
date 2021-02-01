@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -33,7 +33,7 @@ class MemeHistoryFragment : BaseFragment(R.layout.layout_generic_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = LayoutGenericListBinding.bind(view)
 
-        val adapter = RecyclerAdapter()
+        val adapter = RecyclerAdapter(this::onRecyclerItemClick)
         // Show retry button and errors in recycler view layout
         adapter.addLoadStateListener { loadStates ->
             with(binding) {
@@ -71,12 +71,20 @@ class MemeHistoryFragment : BaseFragment(R.layout.layout_generic_list) {
         }
     }
 
+    private fun onRecyclerItemClick(memeObj: PostedMeme) {
+        val action = MemeHistoryFragmentDirections.actionMemeHistoryViewMeme(memeObj)
+        findNavController().navigate(action)
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    private class RecyclerAdapter : PagingDataAdapter<PostedMeme, RecyclerAdapter.ViewHolder>(DIFF_CALLBACK) {
+    private class RecyclerAdapter(
+        private val itemClick: (PostedMeme) -> Unit
+    ) : PagingDataAdapter<PostedMeme, RecyclerAdapter.ViewHolder>(DIFF_CALLBACK) {
+
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             return ViewHolder(
                 LayoutMemeItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -84,9 +92,7 @@ class MemeHistoryFragment : BaseFragment(R.layout.layout_generic_list) {
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-            getItem(position)?.let {
-                holder.bind(it)
-            }
+            getItem(position)?.let { holder.bind(it) }
         }
 
         inner class ViewHolder(private val binding: LayoutMemeItemBinding) :
@@ -95,10 +101,7 @@ class MemeHistoryFragment : BaseFragment(R.layout.layout_generic_list) {
             init {
                 itemView.setOnClickListener {
                     if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
-                        getItem(bindingAdapterPosition)?.let { memeObj ->
-                            val action = MemeHistoryFragmentDirections.actionMemeHistoryViewMeme(memeObj)
-                            itemView.findNavController().navigate(action)
-                        }
+                        getItem(bindingAdapterPosition)?.let { itemClick(it) }
                     }
                 }
             }
