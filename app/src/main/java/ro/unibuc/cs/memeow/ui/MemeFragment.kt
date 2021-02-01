@@ -1,6 +1,5 @@
 package ro.unibuc.cs.memeow.ui
 
-import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -25,7 +24,7 @@ class MemeFragment : BaseFragment(R.layout.fragment_meme) {
     private val memeViewModel: MemeViewModel by viewModels()
 
     private lateinit var fullscreenContentControls: LinearLayout
-    private lateinit var hideHandler: Handler
+    private val hideHandler: Handler = Handler()
 
     private val hidePart2Runnable = Runnable {
         // Delayed removal of status and navigation bar
@@ -55,20 +54,10 @@ class MemeFragment : BaseFragment(R.layout.fragment_meme) {
         fullscreenContentControls.visibility = View.VISIBLE
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    private val delayHideTouchListener = View.OnTouchListener { _, _ ->
-        if (AUTO_HIDE) {
-            delayedHide(AUTO_HIDE_DELAY_MILLIS)
-        }
-        return@OnTouchListener false
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = FragmentMemeBinding.bind(view)
 
         // Don't remove these. They may appear redundant, but idk, android's fault
-        hideHandler = view.handler
         fullscreenContentControls = binding.fullscreenContentControls
 
         visible = true
@@ -76,17 +65,20 @@ class MemeFragment : BaseFragment(R.layout.fragment_meme) {
         binding.fullscreenContent.setOnClickListener { toggle() }
         memeViewModel.postedMeme.observe(viewLifecycleOwner) {
             GlideApp.with(this)
-                .load(it.memeUrl)
-                .into(binding.fullscreenContent)
-
+                .load(it.memeUrl).into(binding.fullscreenContent)
             binding.likeButton.text = it.reactionCount.toString()
+            binding.likeButton.isEnabled = !it.liked
         }
 
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        binding.likeButton.setOnTouchListener(delayHideTouchListener)
-        binding.likeButton.setOnClickListener { memeViewModel.likeMeme() }
+        binding.likeButton.setOnClickListener {
+            if (AUTO_HIDE) {
+                delayedHide(AUTO_HIDE_DELAY_MILLIS)
+            }
+            memeViewModel.likeMeme()
+        }
     }
 
     override fun onDestroyView() {
@@ -176,5 +168,6 @@ class MemeFragment : BaseFragment(R.layout.fragment_meme) {
          * and a change of the status and navigation bar.
          */
         private const val UI_ANIMATION_DELAY = 300
+        private const val TAG = "MemeFragment"
     }
 }

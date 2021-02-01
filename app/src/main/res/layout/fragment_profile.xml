@@ -99,7 +99,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="160dp"
                 tools:ignore="ContentDescription"
-                tools:src="@tools:sample/avatars" />
+                tools:src="@tools:sample/backgrounds/scenic" />
 
 
             <TextView
@@ -111,4 +111,13 @@
                 tools:text="01.12.2020" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
+
+    <Button
+        android:id="@+id/button_history"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/view_meme_history"
+        app:layout_constraintStart_toStartOf="@+id/last_meme_view"
+        app:layout_constraintTop_toBottomOf="@+id/last_meme_view" />
 </androidx.constraintlayout.widget.ConstraintLayout>

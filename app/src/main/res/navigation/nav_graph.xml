@@ -57,6 +57,9 @@
         <action
             android:id="@+id/action_view_last_meme"
             app:destination="@id/meme_fragment" />
+        <action
+            android:id="@+id/action_profile_to_meme_history"
+            app:destination="@id/meme_history_fragment" />
     </fragment>
     <fragment
         android:id="@+id/nav_leaderboard"
@@ -66,5 +69,17 @@
         <action
             android:id="@+id/action_leaderboard_to_profile"
             app:destination="@id/nav_profile" />
+    </fragment>
+    <fragment
+        android:id="@+id/meme_history_fragment"
+        android:name="ro.unibuc.cs.memeow.ui.MemeHistoryFragment"
+        android:label="MemeHistoryFragment"
+        tools:layout="@layout/layout_generic_list">
+        <argument
+            android:name="profileUUID"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_meme_history_view_meme"
+            app:destination="@id/meme_fragment" />
     </fragment>
 </navigation>

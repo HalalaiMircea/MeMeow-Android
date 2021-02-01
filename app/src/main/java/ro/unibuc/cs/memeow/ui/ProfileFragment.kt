@@ -83,6 +83,10 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
                 findNavController().navigate(action)
             }
         }
+        binding.buttonHistory.setOnClickListener {
+            val action = ProfileFragmentDirections.actionProfileToMemeHistory(profile.profileUuid)
+            findNavController().navigate(action)
+        }
     }
 
     override fun onDestroyView() {

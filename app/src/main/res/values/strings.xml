@@ -28,5 +28,6 @@
     <string name="leaderboard">Leaderboard</string>
     <string name="leaderboard_top_1">Leaderboard Top #1</string>
     <string name="publish">Publish</string>
+    <string name="view_meme_history">View meme history</string>
 
 </resources>

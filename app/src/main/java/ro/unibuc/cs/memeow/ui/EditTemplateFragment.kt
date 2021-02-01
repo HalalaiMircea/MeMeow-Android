@@ -130,6 +130,7 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
             layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
             )
+            gravity = Gravity.CENTER
             hint = "Tap to edit"
             typeface = ResourcesCompat.getFont(requireContext(), DEFAULT_FONT_ID)
             textSize = DEFAULT_TEXT_SIZE

@@ -22,7 +22,8 @@ data class PostedMeme(
     val memeBusinessId: String,
     val memeUrl: String,
     val reactionCount: Int,
-    val dateTimeUtc: Date
+    val dateTimeUtc: Date,
+    val liked: Boolean
 ) : Parcelable
 
 data class Profile(
