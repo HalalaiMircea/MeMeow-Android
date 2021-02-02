@@ -1,4 +1,4 @@
-package ro.unibuc.cs.memeow.ui
+package ro.unibuc.cs.memeow.ui.meme
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -24,11 +24,11 @@ import ro.unibuc.cs.memeow.util.MyLoadStateAdapter
 import java.text.DateFormat
 
 @AndroidEntryPoint
-class MemeHistoryFragment : BaseFragment(R.layout.layout_generic_list) {
+class MemeListFragment : BaseFragment(R.layout.layout_generic_list) {
 
     private var _binding: LayoutGenericListBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: MemeHistoryViewModel by viewModels()
+    private val viewModel: MemeListViewModel by viewModels()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = LayoutGenericListBinding.bind(view)
@@ -66,13 +66,13 @@ class MemeHistoryFragment : BaseFragment(R.layout.layout_generic_list) {
             setHasFixedSize(true)
         }
         binding.buttonRetry.setOnClickListener { adapter.retry() }
-        viewModel.memePageData.observe(viewLifecycleOwner) {
+        viewModel.memeData.observe(viewLifecycleOwner) {
             adapter.submitData(viewLifecycleOwner.lifecycle, it)
         }
     }
 
     private fun onRecyclerItemClick(memeObj: PostedMeme) {
-        val action = MemeHistoryFragmentDirections.actionMemeHistoryViewMeme(memeObj)
+        val action = MemeListFragmentDirections.actionGlobalMemeFragment(memeObj)
         findNavController().navigate(action)
     }
 

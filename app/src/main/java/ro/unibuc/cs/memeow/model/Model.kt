@@ -35,6 +35,7 @@ data class Profile(
     val userRole: String,
     val level: Level,
     val profileUuid: String,
+    val facebookLink: String?,
     val lastMeme: PostedMeme?
 ) {
     data class Level(

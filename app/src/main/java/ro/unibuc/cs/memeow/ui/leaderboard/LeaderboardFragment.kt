@@ -1,4 +1,4 @@
-package ro.unibuc.cs.memeow.ui
+package ro.unibuc.cs.memeow.ui.leaderboard
 
 import android.os.Bundle
 import android.view.LayoutInflater

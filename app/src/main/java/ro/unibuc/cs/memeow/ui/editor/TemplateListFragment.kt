@@ -1,4 +1,4 @@
-package ro.unibuc.cs.memeow.ui
+package ro.unibuc.cs.memeow.ui.editor
 
 import android.content.res.Configuration
 import android.os.Bundle
@@ -7,7 +7,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -40,13 +40,13 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
         val spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
             SPAN_COUNT_LANDSCAPE else SPAN_COUNT_PORTRAIT
 
-        val adapter = RecyclerAdapter(viewModel)
+        val adapter = RecyclerAdapter(viewModel, this::onRecyclerItemClick, this::onRecyclerItemLongClick)
 
         // Configure footer to span across multiple columns
         val gridLayoutManager = GridLayoutManager(context, spanCount)
         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
             override fun getSpanSize(position: Int): Int =
-                if (adapter.getItemViewType(position) == RecyclerAdapter.ViewHolder.TYPE) 1 else spanCount
+                if (adapter.getItemViewType(position) == RecyclerAdapter.VIEW_HOLDER_TYPE) 1 else spanCount
         }
 
         // Show retry button and errors in recycler view layout
@@ -111,19 +111,43 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
             }
     }
 
+    private fun onRecyclerItemClick(template: MemeTemplate) {
+        if (viewModel.userCurrentLevel >= template.minRequiredLevel) {
+            viewModel.currentTemplate = template
+            val action = TemplateListFragmentDirections.actionSelectTemplate()
+            findNavController().navigate(action)
+        } else {
+            Snackbar.make(
+                binding.root,
+                "You require at least level ${template.minRequiredLevel}",
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun onRecyclerItemLongClick(template: MemeTemplate): Boolean {
+        val action = TemplateListFragmentDirections.actionNavCreateMemeToMemeList(template.templateName)
+        findNavController().navigate(action)
+        return true
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
-    private class RecyclerAdapter(private val viewModel: EditorViewModel) :
+    private class RecyclerAdapter(
+        private val viewModel: EditorViewModel,
+        private val onClick: (MemeTemplate) -> Unit,
+        private val onLongClick: (MemeTemplate) -> Boolean
+    ) :
         PagingDataAdapter<MemeTemplate, RecyclerAdapter.ViewHolder>(DIFF_CALLBACK) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val binding = LayoutTemplateItemBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
-            return ViewHolder(binding, viewModel)
+            return ViewHolder(binding)
         }
 
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -132,29 +156,16 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
         }
 
         override fun getItemViewType(position: Int) =
-            if (position == itemCount) MyLoadStateAdapter.ViewHolder.TYPE else ViewHolder.TYPE
+            if (position == itemCount) MyLoadStateAdapter.ViewHolder.TYPE else VIEW_HOLDER_TYPE
 
-        class ViewHolder(
-            private val binding: LayoutTemplateItemBinding,
-            private val viewModel: EditorViewModel
-        ) : RecyclerView.ViewHolder(binding.root) {
+        inner class ViewHolder(private val binding: LayoutTemplateItemBinding) :
+            RecyclerView.ViewHolder(binding.root) {
 
             private lateinit var template: MemeTemplate
 
             init {
-                binding.root.setOnClickListener {
-                    // If user's not logged in
-                    if (viewModel.userCurrentLevel >= template.minRequiredLevel) {
-                        viewModel.currentTemplate = template
-                        val action = TemplateListFragmentDirections.actionSelectTemplate()
-                        it.findNavController().navigate(action)
-                    } else
-                        Snackbar.make(
-                            itemView,
-                            "You require at least level ${template.minRequiredLevel}",
-                            Snackbar.LENGTH_SHORT
-                        ).show()
-                }
+                binding.root.setOnClickListener { onClick(template) }
+                binding.root.setOnLongClickListener { onLongClick(template) }
             }
 
             fun bind(template: MemeTemplate) {
@@ -166,10 +177,6 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
             }
 
             override fun toString() = super.toString() + " '" + binding.templateTitle + "'"
-
-            companion object {
-                const val TYPE: Int = 69
-            }
         }
 
         companion object {
@@ -180,6 +187,7 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
                 override fun areContentsTheSame(oldItem: MemeTemplate, newItem: MemeTemplate) =
                     oldItem == newItem
             }
+            const val VIEW_HOLDER_TYPE: Int = 69
         }
     }
 

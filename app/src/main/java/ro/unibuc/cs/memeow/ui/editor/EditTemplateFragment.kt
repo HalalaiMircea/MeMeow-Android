@@ -1,4 +1,4 @@
-package ro.unibuc.cs.memeow.ui
+package ro.unibuc.cs.memeow.ui.editor
 
 import android.graphics.*
 import android.os.Bundle

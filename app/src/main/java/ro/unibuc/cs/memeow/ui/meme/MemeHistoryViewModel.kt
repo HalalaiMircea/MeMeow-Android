@@ -1,4 +1,4 @@
-package ro.unibuc.cs.memeow.ui
+package ro.unibuc.cs.memeow.ui.meme
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope

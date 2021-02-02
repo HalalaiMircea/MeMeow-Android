@@ -1,4 +1,4 @@
-package ro.unibuc.cs.memeow.ui
+package ro.unibuc.cs.memeow.ui.meme
 
 import android.util.Log
 import androidx.lifecycle.LiveData

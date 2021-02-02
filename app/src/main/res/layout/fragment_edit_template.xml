@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="10dp"
     android:background="@color/app_background"
-    tools:context=".ui.EditTemplateFragment">
+    tools:context=".ui.editor.EditTemplateFragment">
 
     <EditText
         android:id="@+id/edit_text_box"

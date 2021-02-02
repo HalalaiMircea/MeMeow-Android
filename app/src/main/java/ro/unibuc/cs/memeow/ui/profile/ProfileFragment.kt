@@ -1,6 +1,9 @@
-package ro.unibuc.cs.memeow.ui
+package ro.unibuc.cs.memeow.ui.profile
 
 import android.animation.ObjectAnimator
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.isVisible
@@ -11,6 +14,7 @@ import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentProfileBinding
 import ro.unibuc.cs.memeow.injection.GlideApp
 import ro.unibuc.cs.memeow.model.Profile
+import ro.unibuc.cs.memeow.ui.LoginFragment
 import ro.unibuc.cs.memeow.util.BaseFragment
 import java.text.DateFormat
 
@@ -44,6 +48,7 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
                 findNavController().navigate(action)
             } else {
                 binding.lastMemeView.isVisible = false
+                binding.facebookLink.isVisible = false
                 viewModel.profile.observe(viewLifecycleOwner, this::onLoggedIn)
             }
         })
@@ -62,6 +67,16 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
             textExp.text = getString(R.string.xp_dd, profile.level.currentXp, maxExp)
             barExp.max = maxExp * 100
         }
+
+        profile.facebookLink?.let { fbUrl ->
+            binding.facebookLink.isVisible = true
+            binding.facebookLink.setOnClickListener {
+                val facebookIntent = Intent(Intent.ACTION_VIEW)
+                facebookIntent.data = Uri.parse(getFacebookPageURL(fbUrl))
+                startActivity(facebookIntent)
+            }
+        }
+
         val startValue = profile.level.lastCurrentXp * 100
         val endValue = profile.level.currentXp * 100
         ObjectAnimator.ofInt(binding.barExp, "progress", startValue, endValue)
@@ -75,7 +90,7 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
                 .load(memeObj.memeUrl).centerCrop().into(binding.imageLastMeme)
             binding.textLastMemeDate.text = DateFormat.getDateInstance().format(memeObj.dateTimeUtc)
             binding.lastMemeView.setOnClickListener {
-                val action = ProfileFragmentDirections.actionViewLastMeme(memeObj)
+                val action = ProfileFragmentDirections.actionGlobalMemeFragment(memeObj)
                 findNavController().navigate(action)
             }
         }
@@ -85,6 +100,28 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
                 username = profile.firstName
             )
             findNavController().navigate(action)
+        }
+    }
+
+    private fun getFacebookPageURL(facebookUrl: String): String {
+        fun parsePageID(): String {
+            val substr = "/"
+            var n = 3
+            var pos: Int = facebookUrl.indexOf(substr)
+            while (--n > 0 && pos != -1) pos = facebookUrl.indexOf(substr, pos + 1)
+            return facebookUrl.substring(pos + 1)
+        }
+
+        val packageManager = requireContext().packageManager
+        return try {
+            val versionCode = packageManager.getPackageInfo("com.facebook.katana", 0).versionCode
+            if (versionCode >= 3002850) { //newer versions of fb app
+                "fb://facewebmodal/f?href=$facebookUrl"
+            } else { //older versions of fb app
+                "fb://page/${parsePageID()}"
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+            facebookUrl //normal web url
         }
     }
 

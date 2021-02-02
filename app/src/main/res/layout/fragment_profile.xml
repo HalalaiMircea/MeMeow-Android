@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/app_background"
-    tools:context=".ui.ProfileFragment">
+    tools:context=".ui.profile.ProfileFragment">
 
     <ImageView
         android:id="@+id/image_profile"
@@ -30,6 +30,16 @@
         app:layout_constraintStart_toEndOf="@+id/image_profile"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Cool Username" />
+
+    <ImageView
+        android:id="@+id/facebook_link"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/com_facebook_favicon_blue"
+        app:layout_constraintStart_toStartOf="@+id/text_name"
+        app:layout_constraintTop_toBottomOf="@+id/text_name"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/text_level"
@@ -121,4 +131,5 @@
         android:text="@string/view_meme_history"
         app:layout_constraintStart_toStartOf="@+id/last_meme_view"
         app:layout_constraintTop_toBottomOf="@+id/last_meme_view" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

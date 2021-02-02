@@ -1,4 +1,4 @@
-package ro.unibuc.cs.memeow.ui
+package ro.unibuc.cs.memeow.ui.meme
 
 import android.os.Build
 import android.os.Bundle
@@ -10,6 +10,7 @@ import android.view.WindowManager
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
+import com.google.android.material.button.MaterialButton
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentMemeBinding
@@ -68,6 +69,9 @@ class MemeFragment : BaseFragment(R.layout.fragment_meme) {
                 .load(it.memeUrl).into(binding.fullscreenContent)
             binding.likeButton.text = it.reactionCount.toString()
             binding.likeButton.isEnabled = !it.liked
+            if (it.liked) {
+                (binding.likeButton as MaterialButton).setIconTintResource(R.color.purple_500)
+            }
         }
 
         // Upon interacting with UI controls, delay any scheduled hide()

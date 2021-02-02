@@ -1,4 +1,4 @@
-package ro.unibuc.cs.memeow.ui
+package ro.unibuc.cs.memeow.ui.profile
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
