@@ -18,17 +18,22 @@ import ro.unibuc.cs.memeow.databinding.LayoutGenericListBinding
 import ro.unibuc.cs.memeow.databinding.LayoutMemeItemBinding
 import ro.unibuc.cs.memeow.injection.GlideApp
 import ro.unibuc.cs.memeow.model.PostedMeme
-import ro.unibuc.cs.memeow.util.BaseFragment
+import ro.unibuc.cs.memeow.util.ArgsFragment
 import ro.unibuc.cs.memeow.util.MarginItemDecoration
 import ro.unibuc.cs.memeow.util.MyLoadStateAdapter
 import java.text.DateFormat
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class MemeListFragment : BaseFragment(R.layout.layout_generic_list) {
-
+class MemeListFragment : ArgsFragment(R.layout.layout_generic_list) {
     private var _binding: LayoutGenericListBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: MemeListViewModel by viewModels()
+
+    @Inject lateinit var viewModelFactory: MemeListViewModel.Factory
+    private val viewModel: MemeListViewModel by viewModels {
+        val prevDestination = findNavController().previousBackStackEntry?.destination?.id!!
+        MemeListViewModel.provideFactory(viewModelFactory, this, arguments, prevDestination)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = LayoutGenericListBinding.bind(view)
@@ -71,14 +76,14 @@ class MemeListFragment : BaseFragment(R.layout.layout_generic_list) {
         }
     }
 
-    private fun onRecyclerItemClick(memeObj: PostedMeme) {
-        val action = MemeListFragmentDirections.actionGlobalMemeFragment(memeObj)
-        findNavController().navigate(action)
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun onRecyclerItemClick(memeObj: PostedMeme) {
+        val action = MemeListFragmentDirections.actionGlobalMemeFragment(memeObj)
+        findNavController().navigate(action)
     }
 
     private class RecyclerAdapter(
@@ -122,5 +127,9 @@ class MemeListFragment : BaseFragment(R.layout.layout_generic_list) {
                     oldItem == newItem
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "MemeListFragment"
     }
 }

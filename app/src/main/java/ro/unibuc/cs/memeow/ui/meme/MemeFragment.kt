@@ -15,11 +15,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentMemeBinding
 import ro.unibuc.cs.memeow.injection.GlideApp
-import ro.unibuc.cs.memeow.util.BaseFragment
+import ro.unibuc.cs.memeow.util.ArgsFragment
 
 @Suppress("DEPRECATION")
 @AndroidEntryPoint
-class MemeFragment : BaseFragment(R.layout.fragment_meme) {
+class MemeFragment : ArgsFragment(R.layout.fragment_meme) {
     private var _binding: FragmentMemeBinding? = null
     private val binding get() = _binding!!
     private val memeViewModel: MemeViewModel by viewModels()

@@ -71,7 +71,7 @@
             app:nullable="true" />
         <action
             android:id="@+id/action_profile_to_meme_history"
-            app:destination="@id/meme_history_fragment"
+            app:destination="@id/meme_list_fragment"
             app:enterAnim="@anim/fragment_open_enter"
             app:exitAnim="@anim/fragment_open_exit"
             app:popEnterAnim="@anim/fragment_close_enter"
@@ -90,18 +90,6 @@
             app:popEnterAnim="@android:anim/slide_in_left"
             app:popExitAnim="@android:anim/slide_out_right" />
     </fragment>
-    <fragment
-        android:id="@+id/meme_history_fragment"
-        android:name="ro.unibuc.cs.memeow.ui.meme.MemeHistoryFragment"
-        android:label="{username}'s History"
-        tools:layout="@layout/layout_generic_list">
-        <argument
-            android:name="profileUUID"
-            app:argType="string" />
-        <argument
-            android:name="username"
-            app:argType="string" />
-    </fragment>
     <action
         android:id="@+id/action_global_login"
         app:destination="@id/login_fragment"
@@ -110,10 +98,10 @@
     <fragment
         android:id="@+id/meme_list_fragment"
         android:name="ro.unibuc.cs.memeow.ui.meme.MemeListFragment"
-        android:label="{templateName} memes"
+        android:label="Meme List"
         tools:layout="@layout/layout_generic_list">
         <argument
-            android:name="templateName"
+            android:name="identifier"
             app:argType="string" />
     </fragment>
     <action

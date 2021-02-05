@@ -15,11 +15,11 @@ import ro.unibuc.cs.memeow.databinding.FragmentProfileBinding
 import ro.unibuc.cs.memeow.injection.GlideApp
 import ro.unibuc.cs.memeow.model.Profile
 import ro.unibuc.cs.memeow.ui.LoginFragment
-import ro.unibuc.cs.memeow.util.BaseFragment
+import ro.unibuc.cs.memeow.util.ArgsFragment
 import java.text.DateFormat
 
 @AndroidEntryPoint
-class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
+class ProfileFragment : ArgsFragment(R.layout.fragment_profile) {
     private var _binding: FragmentProfileBinding? = null
     private val binding get() = _binding!!
     private val viewModel: ProfileViewModel by viewModels()
@@ -95,10 +95,7 @@ class ProfileFragment : BaseFragment(R.layout.fragment_profile) {
             }
         }
         binding.buttonHistory.setOnClickListener {
-            val action = ProfileFragmentDirections.actionProfileToMemeHistory(
-                profileUUID = profile.profileUuid,
-                username = profile.firstName
-            )
+            val action = ProfileFragmentDirections.actionProfileToMemeHistory(profile.profileUuid)
             findNavController().navigate(action)
         }
     }

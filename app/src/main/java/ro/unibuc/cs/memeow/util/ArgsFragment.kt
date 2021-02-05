@@ -9,7 +9,7 @@ const val BUNDLE_ARGS = "BUNDLE_ARGS"
 /**
  * Fragments which hold nav args in a [ArgsViewModel] must extend this class to use those args
  */
-open class BaseFragment(@LayoutRes contentLayoutId: Int) : Fragment(contentLayoutId) {
+open class ArgsFragment(@LayoutRes contentLayoutId: Int) : Fragment(contentLayoutId) {
 
     override fun setArguments(args: Bundle?) {
         if (args != null) {

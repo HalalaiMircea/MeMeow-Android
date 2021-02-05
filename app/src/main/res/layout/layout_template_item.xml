@@ -30,5 +30,6 @@
             android:textColor="@color/black"
             android:textSize="16sp"
             tools:text="Sample meme template title" />
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>
