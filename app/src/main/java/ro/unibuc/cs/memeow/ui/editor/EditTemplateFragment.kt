@@ -34,13 +34,6 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-
-        /*val navController = findNavController()
-        val currentBackStackEntry = navController.currentBackStackEntry!!
-        val savedStateHandle = currentBackStackEntry.savedStateHandle
-        savedStateHandle.getLiveData<Boolean>(LoginFragment.LOGIN_SUCCESSFUL)
-            .observe(currentBackStackEntry, {
-            })*/
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -82,8 +75,8 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         inflater.inflate(R.menu.menu_editor, menu)
 
         publishDialog = AlertDialog.Builder(requireContext())
-            .setTitle("Publish Confirmation")
-            .setMessage("You cannot edit the meme after publishing. Are you sure?")
+            .setTitle(getString(R.string.publish_confirm))
+            .setMessage(getString(R.string.publish_confirm_msg))
             .setPositiveButton(android.R.string.ok) { _, _ ->
                 val container = binding.imgTextContainer
                 val bitmap = Bitmap.createBitmap(container.width, container.height, Bitmap.Config.ARGB_8888)
@@ -175,8 +168,6 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
         private val clickThreshold: Int = 100
 
         override fun onTouch(view: View, event: MotionEvent): Boolean {
-            val newX: Float
-            val newY: Float
             if (event.action == MotionEvent.ACTION_UP && event.eventTime - event.downTime < clickThreshold) {
                 view.performClick()
                 return true
@@ -187,7 +178,8 @@ class EditTemplateFragment : Fragment(R.layout.fragment_edit_template) {
                     dY = view.y - event.rawY
                 }
                 MotionEvent.ACTION_MOVE -> {
-                    newX = event.rawX + dX; newY = event.rawY + dY
+                    val newX = event.rawX + dX
+                    val newY = event.rawY + dY
 
                     if ((newX <= 0 || newX >= screenWidth - view.width) &&
                         (newY <= 0 || newY >= screenHeight - view.height)

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">MeMeow</string>
+    <string name="navigation_drawer_open">Deschide meniul de navigare</string>
+    <string name="navigation_drawer_close">Inchide meniul de navigare</string>
+    <string name="action_settings">Setări</string>
+    <string name="login">Login</string>
+    <string name="menu_home">Acasă</string>
+    <string name="meme_template">Șablon Meme</string>
+    <string name="create_meme">Crează Meme</string>
+    <string name="write_some_funny_text">Scrie niște text amuzant…</string>
+    <string name="retry">Reîncercă</string>
+    <string name="failed_loading_images">Nu s-a putut încărca conținutul</string>
+    <string name="meme_not_found">Nu s-a găsit conținut pentru căutarea dvs.</string>
+    <string name="add_text">Adaugă Text</string>
+    <string name="profile">Profil</string>
+    <string name="edit_meme">Editează Meme</string>
+    <string name="view_meme">Vizualizare Meme</string>
+    <string name="level_d">Nivel %d</string>
+    <string name="featured_meme">Ultimul Meme</string>
+    <string name="rank_d">Rang %d</string>
+    <string name="leaderboard">Clasamente</string>
+    <string name="leaderboard_top_1">Clasament Top #1</string>
+    <string name="publish">Publică</string>
+    <string name="view_meme_history">Vizualizați istoricul memelor</string>
+    <string name="login_message">Logati-vă pentru a continua Memele</string>
+    <string name="required_lvl_d">Ai nevoie de cel puțin nivelul %d</string>
+    <string name="publish_confirm">Confirmați publicarea</string>
+    <string name="publish_confirm_msg">Nu poți edita memeul după publicare. Esti sigur?</string>
+</resources>

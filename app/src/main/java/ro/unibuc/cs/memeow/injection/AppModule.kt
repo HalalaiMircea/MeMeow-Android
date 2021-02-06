@@ -13,7 +13,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import ro.unibuc.cs.memeow.api.MemeowApi
-import ro.unibuc.cs.memeow.model.repo.JTW_TOKEN
+import ro.unibuc.cs.memeow.model.repo.JWT_TOKEN
 import javax.inject.Singleton
 
 @Module
@@ -32,11 +32,11 @@ object AppModule {
         val client = OkHttpClient.Builder()
             .addInterceptor { chain: Interceptor.Chain ->
                 val originalRequest = chain.request()
-                var requestBuilder = originalRequest.newBuilder()
+                val requestBuilder = originalRequest.newBuilder()
 
                 // Executes the block only if the receiver of ?.let is nonNull
-                sharedPrefs.getString(JTW_TOKEN, null)?.let {
-                    requestBuilder = requestBuilder.header("Authorization", it)
+                sharedPrefs.getString(JWT_TOKEN, null)?.let {
+                    requestBuilder.header("Authorization", it)
                 }
 
                 return@addInterceptor chain.proceed(requestBuilder.build())

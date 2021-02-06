@@ -1,24 +1,25 @@
 package ro.unibuc.cs.memeow.ui.home
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
-import androidx.fragment.app.Fragment
+import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
 import ro.unibuc.cs.memeow.R
 import ro.unibuc.cs.memeow.databinding.FragmentHomeBinding
 import ro.unibuc.cs.memeow.injection.GlideApp
+import ro.unibuc.cs.memeow.util.ViewBindingFragment
 
 @AndroidEntryPoint
-class HomeFragment : Fragment(R.layout.fragment_home) {
-    private var _binding: FragmentHomeBinding? = null
-    private val binding get() = _binding!!
+class HomeFragment : ViewBindingFragment<FragmentHomeBinding>() {
     private val homeViewModel: HomeViewModel by viewModels()
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        _binding = FragmentHomeBinding.bind(view)
+    override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentHomeBinding =
+        FragmentHomeBinding::inflate
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         homeViewModel.topRanking.observe(viewLifecycleOwner) {
             val fullName = it.userResponse.firstName + " " + it.userResponse.lastName
             binding.textTop.text = fullName
@@ -29,10 +30,5 @@ class HomeFragment : Fragment(R.layout.fragment_home) {
         binding.imageTop.setOnClickListener {
             findNavController().navigate(R.id.nav_leaderboard)
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

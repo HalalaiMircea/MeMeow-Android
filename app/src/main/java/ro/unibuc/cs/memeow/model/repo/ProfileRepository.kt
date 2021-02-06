@@ -2,6 +2,7 @@ package ro.unibuc.cs.memeow.model.repo
 
 import android.content.SharedPreferences
 import android.util.Log
+import androidx.core.content.edit
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import retrofit2.Call
@@ -12,7 +13,7 @@ import ro.unibuc.cs.memeow.model.Profile
 import javax.inject.Inject
 import javax.inject.Singleton
 
-const val JTW_TOKEN = "jwt_token"
+const val JWT_TOKEN = "jwt_token"
 
 @Singleton
 class ProfileRepository @Inject constructor(
@@ -27,7 +28,7 @@ class ProfileRepository @Inject constructor(
         get() = signedUserProfile.value != null
 
     init {
-        if (sharedPrefs.getString(JTW_TOKEN, null) != null)
+        if (sharedPrefs.getString(JWT_TOKEN, null) != null)
             getUserProfile(null)
         else
             _signedUserProfile.value = null
@@ -50,9 +51,7 @@ class ProfileRepository @Inject constructor(
      * Saves the jwt token to storage and loads users's profile from backend
      */
     fun signInUser(token: String) {
-        sharedPrefs.edit()
-            .putString(JTW_TOKEN, token)
-            .apply()
+        sharedPrefs.edit { putString(JWT_TOKEN, token) }
         getUserProfile(null)
     }
 
@@ -60,9 +59,7 @@ class ProfileRepository @Inject constructor(
      * Deletes the jwt token from storage and sets the logged user to null
      */
     fun signOutUser() {
-        sharedPrefs.edit()
-            .remove(JTW_TOKEN)
-            .apply()
+        sharedPrefs.edit { remove(JWT_TOKEN) }
         _signedUserProfile.value = null
     }
 

@@ -54,8 +54,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
         loginFbButton.registerCallback(callbackManager, object : FacebookCallback<LoginResult> {
             override fun onSuccess(result: LoginResult) {
-                val userId = result.accessToken.userId
-                val fbAuthUser = FacebookAuthUser(result.accessToken.token, userId)
+                val fbAuthUser = FacebookAuthUser(result.accessToken.token, result.accessToken.userId)
                 memeowApi.facebookAuth(fbAuthUser).enqueue(MemeowAPICallback())
             }
 

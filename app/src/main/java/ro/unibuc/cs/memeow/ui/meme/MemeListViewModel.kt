@@ -1,7 +1,6 @@
 package ro.unibuc.cs.memeow.ui.meme
 
 import android.os.Bundle
-import android.util.Log
 import androidx.lifecycle.AbstractSavedStateViewModelFactory
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -29,10 +28,6 @@ class MemeListViewModel @AssistedInject constructor(
     } else {
         repository.getUserMemeHistory(args.identifier)
     }.cachedIn(viewModelScope)
-
-    init {
-        Log.e(TAG, "MemeListVM $prevDestination")
-    }
 
     @AssistedFactory
     interface Factory {

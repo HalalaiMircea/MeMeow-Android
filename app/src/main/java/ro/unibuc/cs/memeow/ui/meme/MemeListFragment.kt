@@ -4,10 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +19,7 @@ import ro.unibuc.cs.memeow.model.PostedMeme
 import ro.unibuc.cs.memeow.util.ArgsFragment
 import ro.unibuc.cs.memeow.util.MarginItemDecoration
 import ro.unibuc.cs.memeow.util.MyLoadStateAdapter
+import ro.unibuc.cs.memeow.util.addGenericLoadStateListener
 import java.text.DateFormat
 import javax.inject.Inject
 
@@ -37,28 +36,10 @@ class MemeListFragment : ArgsFragment(R.layout.layout_generic_list) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = LayoutGenericListBinding.bind(view)
-
         val adapter = RecyclerAdapter(this::onRecyclerItemClick)
-        // Show retry button and errors in recycler view layout
-        adapter.addLoadStateListener { loadStates ->
-            with(binding) {
-                progressBar.isVisible = loadStates.source.refresh is LoadState.Loading
-                recyclerView.isVisible = loadStates.source.refresh is LoadState.NotLoading
-                buttonRetry.isVisible = loadStates.source.refresh is LoadState.Error
-                textViewError.isVisible = loadStates.source.refresh is LoadState.Error
 
-                // In case of no result query for recycler view
-                if (loadStates.source.refresh is LoadState.NotLoading &&
-                    loadStates.append.endOfPaginationReached &&
-                    adapter.itemCount < 1
-                ) {
-                    recyclerView.isVisible = false
-                    textViewEmpty.isVisible = true
-                } else {
-                    textViewEmpty.isVisible = false
-                }
-            }
-        }
+        adapter.addGenericLoadStateListener(binding)
+
         // Finish recyclerView setup
         with(binding.recyclerView) {
             this.adapter = adapter.withLoadStateFooter(MyLoadStateAdapter { adapter.retry() })
@@ -106,7 +87,7 @@ class MemeListFragment : ArgsFragment(R.layout.layout_generic_list) {
             init {
                 itemView.setOnClickListener {
                     if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
-                        getItem(bindingAdapterPosition)?.let { itemClick(it) }
+                        getItem(bindingAdapterPosition)?.let { itemClick.invoke(it) }
                     }
                 }
             }

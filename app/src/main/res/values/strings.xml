@@ -2,9 +2,6 @@
     <string name="app_name">MeMeow</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="login">Login</string>
     <string name="menu_home">Home</string>
@@ -15,14 +12,14 @@
     <string name="failed_loading_images">Failed loading content</string>
     <string name="meme_not_found">No content found for your query</string>
 
-    <string name="facebook_app_id">415198529620152</string>
-    <string name="fb_login_protocol_scheme">fb415198529620152</string>
+    <string name="facebook_app_id" translatable="false">415198529620152</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb415198529620152</string>
     <string name="add_text">Add Text</string>
     <string name="profile">Profile</string>
     <string name="edit_meme">Edit Meme</string>
     <string name="view_meme">View Meme</string>
     <string name="level_d">Level %d</string>
-    <string name="xp_dd">XP: %d/%d</string>
+    <string name="xp_dd" translatable="false">XP: %d/%d</string>
     <string name="featured_meme">Latest meme</string>
     <string name="rank_d">Rank %d</string>
     <string name="leaderboard">Leaderboard</string>
@@ -30,5 +27,8 @@
     <string name="publish">Publish</string>
     <string name="view_meme_history">View meme history</string>
     <string name="login_message">Please login to continue Memeing</string>
+    <string name="required_lvl_d">You require at least level %d</string>
+    <string name="publish_confirm">Publish Confirmation</string>
+    <string name="publish_confirm_msg">You cannot edit the meme after publishing. Are you sure?</string>
 
 </resources>

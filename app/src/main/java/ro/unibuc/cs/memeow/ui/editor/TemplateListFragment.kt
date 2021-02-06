@@ -4,11 +4,9 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.*
 import androidx.appcompat.widget.SearchView
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
-import androidx.paging.LoadState
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
@@ -22,6 +20,7 @@ import ro.unibuc.cs.memeow.injection.GlideApp
 import ro.unibuc.cs.memeow.model.MemeTemplate
 import ro.unibuc.cs.memeow.util.MarginItemDecoration
 import ro.unibuc.cs.memeow.util.MyLoadStateAdapter
+import ro.unibuc.cs.memeow.util.addGenericLoadStateListener
 
 @AndroidEntryPoint
 class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
@@ -37,52 +36,31 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         _binding = LayoutGenericListBinding.bind(view)
 
-        val spanCount = if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE)
-            SPAN_COUNT_LANDSCAPE else SPAN_COUNT_PORTRAIT
-
-        val adapter = RecyclerAdapter(viewModel, this::onRecyclerItemClick, this::onRecyclerItemLongClick)
-
-        // Configure footer to span across multiple columns
-        val gridLayoutManager = GridLayoutManager(context, spanCount)
-        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-            override fun getSpanSize(position: Int): Int =
-                if (adapter.getItemViewType(position) == RecyclerAdapter.VIEW_HOLDER_TYPE) 1 else spanCount
-        }
-
-        // Show retry button and errors in recycler view layout
-        adapter.addLoadStateListener { loadStates ->
-            with(binding) {
-                progressBar.isVisible = loadStates.source.refresh is LoadState.Loading
-                recyclerView.isVisible = loadStates.source.refresh is LoadState.NotLoading
-                buttonRetry.isVisible = loadStates.source.refresh is LoadState.Error
-                textViewError.isVisible = loadStates.source.refresh is LoadState.Error
-
-                // In case of no result query for recycler view
-                if (loadStates.source.refresh is LoadState.NotLoading &&
-                    loadStates.append.endOfPaginationReached &&
-                    adapter.itemCount < 1
-                ) {
-                    recyclerView.isVisible = false
-                    textViewEmpty.isVisible = true
-                } else {
-                    textViewEmpty.isVisible = false
-                }
+        val gridSpacingPx = resources.getDimensionPixelOffset(R.dimen.recycler_view_item_spacing)
+        val spanCount =
+            if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                SPAN_COUNT_LANDSCAPE
+            } else {
+                SPAN_COUNT_PORTRAIT
             }
-        }
+        val adapter = RecyclerAdapter(viewModel, this::onRecyclerItemClick, this::onRecyclerItemLongClick)
+        adapter.addGenericLoadStateListener(binding)
+
         // Finish recyclerView setup
         with(binding.recyclerView) {
             this.adapter = adapter.withLoadStateFooter(MyLoadStateAdapter { adapter.retry() })
-            layoutManager = gridLayoutManager
-            addItemDecoration(
-                MarginItemDecoration(
-                    resources.getDimensionPixelOffset(R.dimen.recycler_view_item_spacing), spanCount
-                )
-            )
+
+            // Configure footer to span across multiple columns
+            layoutManager = GridLayoutManager(context, spanCount).apply {
+                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                    override fun getSpanSize(position: Int): Int =
+                        if (adapter.getItemViewType(position) == RecyclerAdapter.VIEW_HOLDER_TYPE) 1 else spanCount
+                }
+            }
+            addItemDecoration(MarginItemDecoration(gridSpacingPx, spanCount))
             setHasFixedSize(true)
         }
-
         binding.buttonRetry.setOnClickListener { adapter.retry() }
-
         viewModel.templates.observe(viewLifecycleOwner) {
             adapter.submitData(viewLifecycleOwner.lifecycle, it)
         }
@@ -119,7 +97,7 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
         } else {
             Snackbar.make(
                 binding.root,
-                "You require at least level ${template.minRequiredLevel}",
+                getString(R.string.required_lvl_d, template.minRequiredLevel),
                 Snackbar.LENGTH_SHORT
             ).show()
         }
@@ -140,8 +118,7 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
         private val viewModel: EditorViewModel,
         private val onClick: (MemeTemplate) -> Unit,
         private val onLongClick: (MemeTemplate) -> Boolean
-    ) :
-        PagingDataAdapter<MemeTemplate, RecyclerAdapter.ViewHolder>(DIFF_CALLBACK) {
+    ) : PagingDataAdapter<MemeTemplate, RecyclerAdapter.ViewHolder>(DIFF_CALLBACK) {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
             val binding = LayoutTemplateItemBinding.inflate(
@@ -164,8 +141,8 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
             private lateinit var template: MemeTemplate
 
             init {
-                binding.root.setOnClickListener { onClick(template) }
-                binding.root.setOnLongClickListener { onLongClick(template) }
+                itemView.setOnClickListener { onClick.invoke(template) }
+                itemView.setOnLongClickListener { onLongClick.invoke(template) }
             }
 
             fun bind(template: MemeTemplate) {
@@ -175,8 +152,6 @@ class TemplateListFragment : Fragment(R.layout.layout_generic_list) {
                 binding.templateTitle.text = template.templateName
                 itemView.alpha = if (viewModel.userCurrentLevel < template.minRequiredLevel) 0.5f else 1f
             }
-
-            override fun toString() = super.toString() + " '" + binding.templateTitle + "'"
         }
 
         companion object {

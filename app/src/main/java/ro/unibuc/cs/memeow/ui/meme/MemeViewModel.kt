@@ -1,21 +1,17 @@
 package ro.unibuc.cs.memeow.ui.meme
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import ro.unibuc.cs.memeow.api.MemeowApi
 import ro.unibuc.cs.memeow.model.PostedMeme
+import ro.unibuc.cs.memeow.model.repo.MemeRepository
 import ro.unibuc.cs.memeow.util.ArgsViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class MemeViewModel @Inject constructor(
-    private val memeowApi: MemeowApi,
+    private val repository: MemeRepository,
     savedStateHandle: SavedStateHandle
 ) : ArgsViewModel(savedStateHandle) {
 
@@ -26,19 +22,7 @@ class MemeViewModel @Inject constructor(
     val postedMeme: LiveData<PostedMeme> get() = _postedMeme
 
     fun likeMeme() {
-        memeowApi.likeMeme(args.memeObject.memeBusinessId).enqueue(object : Callback<PostedMeme> {
-            override fun onResponse(call: Call<PostedMeme>, response: Response<PostedMeme>) {
-                if (response.isSuccessful) {
-                    _postedMeme.value = response.body()
-                } else {
-                    Log.d(TAG, "onResponse: ${response.code()}")
-                }
-            }
-
-            override fun onFailure(call: Call<PostedMeme>, t: Throwable) {
-                Log.e(TAG, "onFailure: $t")
-            }
-        })
+        repository.likeAndUpdateMeme(args.memeObject.memeBusinessId, _postedMeme)
     }
 
     companion object {
